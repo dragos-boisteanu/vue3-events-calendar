@@ -189,7 +189,7 @@ const isCurrentDay = (day) => {
 </script>
 
 <template>
-  <div class="size-full">
+  <div class="size-full flex flex-col">
     <div class="flex items-center justify-between bg-orange-500 p-4">
       <div class="flex items-center gap-x-4 bg-white">
         <div>
@@ -213,7 +213,7 @@ const isCurrentDay = (day) => {
         {{ day }}
       </div>
     </div>
-    <div class="grid size-full" :class="{
+    <div class="flex-1 grid size-full overflow-y-auto" :class="{
       'grid-cols-7': mode === modes[0] || mode === modes[1],
       'grid-cols-1': mode === modes[2] || mode === modes[3]
     }">
@@ -234,12 +234,12 @@ const isCurrentDay = (day) => {
       <template v-if="mode === modes[2]">
         <div class="flex size-full">
           <div class="w-full">
-            <div class="w-full border justify-stretch flex items-start">
-              <div class="border-r p-2 w-24 text-center">All day</div>
-              <div class="w-full flex-1 basis-full px-2">event</div>
+            <div class="w-full h-36 border justify-stretch flex items-start">
+              <div class="border-r h-full p-2 w-24 text-center">All day</div>
+              <div class="w-full  flex-1 basis-full px-2">event</div>
             </div>
-            <div class="border flex items-start" v-for="(time, index) in hours24" :key="index">
-              <div class="border-r p-2 w-24 text-center">{{ time }}</div>
+            <div class="border  h-36 flex items-start" v-for="(time, index) in hours24" :key="index">
+              <div class="border-r h-full p-2 w-24 text-center">{{ time }}</div>
               <div class="w-full flex-1 basis-full flex px-2">event</div>
             </div>
           </div>
@@ -259,7 +259,7 @@ const isCurrentDay = (day) => {
   @apply bg-gray-50
 }
 .day .header {
-  @apply text-center p-2 text-sm  border-b
+  @apply text-center p-2 text-sm
 }
 
 .current-day {
