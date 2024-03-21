@@ -118,14 +118,14 @@ const monthDays = computed(() => {
 })
 
 const firstWeekDay = computed( () => {
-  const day = currentDate.value.getDate() - currentDate.value.getDay()+ (currentDate.value.getDay() === 0 ? -6:1)
+  const day = currentDate.value.getDate() - currentDate.value.getDay() + (currentDate.value.getDay() === 0 ? -6 : 1)
   return new Date(currentDate.value.getFullYear(), currentDate.value.getMonth(), day)
 })
 const lastWeekDay = computed(() => {
-  return new Date(new Date(currentDate.value.setDate(currentDate.value.getDate()
-      - currentDate.value.getDay() +7)))
+  const date = new Date(currentDate.value)
+  return new Date(new Date(date.setDate(date.getDate()
+      - date.getDay() + 7)))
 })
-
 
 const weekDays = computed(() => {
   if(mode.value !== modes.Week) return
@@ -133,7 +133,7 @@ const weekDays = computed(() => {
   let result = []
 
   const firstDate = new Date(firstWeekDay.value)
-  while(firstDate < lastWeekDay.value) {
+  while(firstDate <= lastWeekDay.value) {
     const dayOfWeek = days.find(day => firstDate.getDay() === day.id)
     const name = `${dayOfWeek.short} ${firstDate.getDate() }/${firstDate.getMonth() + 1}`
 
@@ -191,7 +191,6 @@ const title = computed(() => {
     case modes.Week: {
       const startMonthName = months.find(month => month.id === firstWeekDay.value.getMonth()).name
       const endMonthName = months.find(month => month.id === lastWeekDay.value.getMonth()).name
-
       title = `${firstWeekDay.value.getDate()} ${startMonthName} - ${lastWeekDay.value.getDate()} ${endMonthName}, ${year.value}`
       break
     }
@@ -206,11 +205,10 @@ const title = computed(() => {
 
 const previous = () => {
   switch(mode.value) {
-    // month
     case modes.Month: currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() - 1, 1 ); break
-    // week
-    case modes.Week: currentDate.value = new Date(currentDate.value.setDate(firstWeekDay.value.getDate() - 1)); break
-    // day
+    case modes.Week: {
+      currentDate.value = new Date(firstWeekDay.value.getFullYear(), firstWeekDay.value.getMonth(), firstWeekDay.value.getDate() - 7);
+    } break
     case modes.Day: currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth(),currentDate.value.getDate() - 1); break
   }
 }
@@ -219,7 +217,7 @@ const next = () => {
     // month
     case modes.Month: currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() + 1, 1 ); break
     // week
-    case modes.Week: currentDate.value = new Date(currentDate.value.setDate(lastWeekDay.value.getDate() + 1)); break
+    case modes.Week:  currentDate.value = new Date(lastWeekDay.value.getFullYear(), lastWeekDay.value.getMonth(), lastWeekDay.value.getDate() + 1 ); break
     // day
     case modes.Day: currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() ,currentDate.value.getDate() + 1); break
   }
@@ -282,6 +280,7 @@ const isCurrentDay = (day) => {
         </div>
       </template>
 
+<!--      week structure-->
       <template v-if="mode === modes.Week">
         <div class="grid grid-cols-8">
           <div class="col-start-1 col-end-2 border-r border-b"/>
