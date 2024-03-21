@@ -138,7 +138,7 @@ const weekDays = computed(() => {
     const name = `${dayOfWeek.short} ${firstDate.getDate() }/${firstDate.getMonth() + 1}`
 
     result.push({
-      id: dayOfWeek.id,
+      id: firstDate.getDate(),
       name,
       date: new Date(firstDate),
       events: []
@@ -224,11 +224,9 @@ const next = () => {
     case modes.Day: currentDate.value = new Date(currentDate.value.getFullYear(), currentDate.value.getMonth() ,currentDate.value.getDate() + 1); break
   }
 }
-const setToday = () => currentDate.value = today
-
+const setToday = () => currentDate.value = new Date(today)
 
 const setMode = (m) => mode.value = m
-
 
 const isCurrentDay = (day) => {
   const todayDate = today.getDate()
@@ -287,7 +285,7 @@ const isCurrentDay = (day) => {
       <template v-if="mode === modes.Week">
         <div class="grid grid-cols-8">
           <div class="col-start-1 col-end-2 border-r border-b"/>
-          <div class="p-2 border-r border-b w-full text-center" v-for="day in weekDays" :key="day.id">{{ day.name }}</div>
+          <div class="p-2 border-r border-b w-full text-center"  :class="{'current-day': isCurrentDay(day.id)}" v-for="day in weekDays" :key="day.id">{{ day.name }}</div>
           <div class="h-12 col-start-1 col-end-9 w-full grid grid-cols-8 border-b">
             <div class="col-start-1 col-end-2 border-r p-2 text-center">All day</div>
             <div v-for="day in weekDays" :key="day.id" class="p-2 border-r ">
