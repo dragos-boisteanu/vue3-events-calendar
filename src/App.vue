@@ -149,7 +149,7 @@ const monthDays = computed(() => {
   const lastMonthDate = new Date(year.value, month.value + 1, 0)
   const days = []
 
-  while (firstMonthDate < lastMonthDate) {
+  while (firstMonthDate <= lastMonthDate) {
     const date = new Date(firstMonthDate)
     days.push({
       id: date.getDate(),
