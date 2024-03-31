@@ -129,18 +129,55 @@ const currentDate = ref(new Date())
 const year = computed(() => currentDate.value.getFullYear())
 const month = computed(() => currentDate.value.getMonth())
 
-// TODO: find a better name for this computed
-// it represents the days of prev month that are
-// overlapping with the current month calendar
-const weekDayOfFirstDayOfMonth = computed(() => {
+const daysOfPreviousMonth = computed(() => {
+  if (mode.value !== modes.Month) return []
+
   const firstDayOfMonth = new Date(year.value, month.value, 1)
-  return firstDayOfMonth.getDay() === 0 ? 6 : firstDayOfMonth.getDay() - 1
+  const days = []
+
+  if (firstDayOfMonth.getDay() > 0) {
+    const firstDay = new Date(year.value, month.value, 2 - firstDayOfMonth.getDay())
+    const lastDay = new Date(year.value, month.value, 0)
+
+    while (firstDay <= lastDay) {
+      const day = {
+        id: firstDay.getDate(),
+        date: firstDay,
+        events: []
+      }
+      days.push(day)
+
+      firstDay.setDate(firstDay.getDate() + 1)
+    }
+  }
+
+  return days
 })
 
-/*const weekDayOfLastDayOfMonth = computed(() => {
-  const lastDayOfMonth =  new Date(year.value, month.value + 1, 0)
-  return lastDayOfMonth.getDay() === 0 ? 6 : lastDayOfMonth.getDay() - 1
-})*/
+const daysOfNextMonth = computed(() => {
+  if (mode.value !== modes.Month) return []
+
+  const lastDayOfMonth = new Date(year.value, month.value + 1, 0)
+  const days = []
+
+  if (lastDayOfMonth.getDay() > 0) {
+    const firstDay = new Date(year.value, month.value + 1, 1)
+    const lastDay = new Date(year.value, month.value + 1, 7 - lastDayOfMonth.getDay())
+
+    while (firstDay <= lastDay) {
+      const day = {
+        id: firstDay.getDate(),
+        date: firstDay,
+        events: []
+      }
+      days.push(day)
+
+      firstDay.setDate(firstDay.getDate() + 1)
+    }
+  }
+
+  return days
+})
 
 const monthDays = computed(() => {
   if (mode.value !== modes.Month) return
@@ -369,10 +406,22 @@ const isCurrentDay = (day) => {
     >
       <!--      month structure  -->
       <template v-if="mode === modes.Month">
-        <div v-for="day in weekDayOfFirstDayOfMonth" :key="day" class="day day--empty" />
+        <div v-for="day in daysOfPreviousMonth" :key="day" class="day day--empty">
+          <div class="header">{{ day.id }}</div>
+          <div class="content">
+            <slot />
+          </div>
+        </div>
 
         <div v-for="day in monthDays" :key="day.id" class="day">
           <div class="header" :class="{ 'current-day': isCurrentDay(day.id) }">{{ day.id }}</div>
+          <div class="content">
+            <slot />
+          </div>
+        </div>
+
+        <div v-for="day in daysOfNextMonth" :key="day" class="day day--empty">
+          <div class="header">{{ day.id }}</div>
           <div class="content">
             <slot />
           </div>
