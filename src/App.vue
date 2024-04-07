@@ -135,8 +135,9 @@ const daysOfPreviousMonth = computed(() => {
   const firstDayOfMonth = new Date(year.value, month.value, 1)
   const days = []
 
+  // TODO: handle situation on first day of the month is on a Sunday
   if (firstDayOfMonth.getDay() > 0) {
-    const firstDay = new Date(year.value, month.value, 2 - firstDayOfMonth.getDay())
+    const firstDay = new Date(year.value, month.value, 2 - firstDayOfMonth.getDay() )
     const lastDay = new Date(year.value, month.value, 0)
 
     while (firstDay <= lastDay) {
