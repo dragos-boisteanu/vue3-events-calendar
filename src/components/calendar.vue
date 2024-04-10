@@ -396,45 +396,43 @@ const isCurrentDay = (day) => {
 </script>
 
 <template>
-  <div class="calendar flex size-full flex-col">
-    <div class="calendar__header flex items-center justify-between bg-orange-500 p-4">
-      <div class="flex items-center gap-x-4 bg-white">
-        <div>
-          <button @click="previous">Prev</button>
-          <button @click="next">Next</button>
-        </div>
+  <div class="calendar">
+    <div class="calendar__header">
+      <div class="calendar__navigation flex items-center gap-x-4 bg-white">
+        <button @click="previous">Prev</button>
+        <button @click="next">Next</button>
         <button @click="setToday">Today</button>
       </div>
-      <div class="calendar__title bg-white">
+      <div class="calendar__title">
         {{ title }}
       </div>
-      <div class="calendar__modes__container flex items-center gap-x-2 bg-white">
+      <div class="calendar__modes">
         <button
           v-for="(mode, index) in modes"
           :key="index"
           @click="setMode(mode)"
-          class="calendar__mode capitalize"
+          class="calendar__mode"
         >
           {{ mode }}
         </button>
       </div>
     </div>
     <div
-      class="day-title__container grid"
+      class="day-title__container"
       :class="{
-        'days-title__container-seven-cols grid-cols-7': mode === modes.Month || mode === modes.Week,
-        'days-title__container-one-col grid-cols-1': mode === modes.Day || mode === modes.List
+        'days__title__container--seven-cols': mode === modes.Month || mode === modes.Week,
+        'days__title__container--one-col': mode === modes.Day || mode === modes.List
       }"
     >
-      <div v-for="(day, index) in daysTitle" :key="index" class="day-title p-2 text-center">
+      <div v-for="(day, index) in daysTitle" :key="index" class="day__title">
         {{ day }}
       </div>
     </div>
     <div
-      class="days__container grid size-full flex-1 overflow-y-auto"
+      class="days__container"
       :class="{
-        'days__container-seven-cols grid-cols-7': mode === modes.Month,
-        'days-container-one-col grid-cols-1':
+        'days__container--seven-cols grid-cols-7': mode === modes.Month,
+        'days__container--one-col grid-cols-1':
           mode === modes.Week || mode === modes.Day || mode === modes.List
       }"
     >
@@ -451,63 +449,47 @@ const isCurrentDay = (day) => {
           <div class="day__header" :class="{ 'current-day': isCurrentDay(day.id) }">
             {{ day.id }}
           </div>
-          <div class="day__content flex flex-col gap-y-1 px-0.5">
-            <div v-for="event in day.events" :key="event.id" class="day__event">
-              <slot :event="event" />
-            </div>
+          <div class="day__content">
+            <slot :event="event" v-for="event in day.events" :key="event.id" />
           </div>
         </div>
 
         <div v-for="day in daysOfNextMonth" :key="day" class="day day--empty">
           <div class="day__header">{{ day.id }}</div>
           <div class="day__content">
-            <div v-for="event in day.events" :key="event.id" class="day__event">
-              <slot :event="event" />
-            </div>
+            <slot :event="event" v-for="event in day.events" :key="event.id" />
           </div>
         </div>
       </template>
 
       <!--      week structure-->
       <template v-if="mode === modes.Week">
-        <div class="weeks__container grid grid-cols-8">
-          <div class="week__cell-empty col-start-1 col-end-2 border-b border-r" />
+        <div class="week">
+          <div class="week__days--empty" />
           <div
-            class="week-day__title w-full border-b border-r p-2 text-center"
+            class="week__day__title"
             :class="{ 'current-day': isCurrentDay(day.id) }"
             v-for="day in weekDays"
             :key="day.id"
           >
             {{ day.name }}
           </div>
-          <div
-            class="week-days__container col-start-1 col-end-9 grid h-12 w-full grid-cols-8 border-b"
-          >
-            <div class="week-day__time col-start-1 col-end-2 border-r p-2 text-center">All day</div>
-            <div v-for="day in weekDays" :key="day.id" class="week-day border-r p-2">
+          <div class="week__days__container">
+            <div class="week__day__time">All day</div>
+            <div v-for="day in weekDays" :key="day.id" class="week__day">
               <!--              TODO: all day events list-->
             </div>
           </div>
-          <div
-            class="week-days__container col-start-1 col-end-9 grid h-36 w-full grid-cols-8 border-b"
-            v-for="(time, index) in hours24"
-            :key="index"
-          >
-            <div class="week-day__time col-start-1 col-end-2 border-r p-2 text-center">
+          <div class="week__days__container" v-for="(time, index) in hours24" :key="index">
+            <div class="week__day__time">
               {{ time }}
             </div>
-            <div
-              v-for="day in weekDays"
-              :key="day.id"
-              class="week-day flex flex-col gap-y-0.5 border-r p-2"
-            >
-              <div
+            <div v-for="day in weekDays" :key="day.id" class="week__day">
+              <slot
+                :event="event"
                 v-for="event in getDayEventsByHour(time, day.events)"
                 :key="event.id"
-                class="day__event"
-              >
-                <slot :event="event" />
-              </div>
+              />
             </div>
           </div>
         </div>
@@ -525,11 +507,12 @@ const isCurrentDay = (day) => {
             </div>
             <div class="flex h-36 items-start border" v-for="(time, index) in hours24" :key="index">
               <div class="h-full w-24 border-r p-2 text-center">{{ time }}</div>
-
               <div class="flex w-full flex-1 basis-full flex-col gap-y-0.5 px-2">
-                <div v-for="event in getCurrentDayEventsByHour(time)" :key="event.id">
-                  <slot :event="event" />
-                </div>
+                <slot
+                  :event="event"
+                  v-for="event in getCurrentDayEventsByHour(time)"
+                  :key="event.id"
+                />
               </div>
             </div>
           </div>
@@ -540,26 +523,160 @@ const isCurrentDay = (day) => {
 </template>
 
 <style scoped>
+.calendar {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  height: 100%;
+}
+
+.calendar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 16px;
+}
+
+.calendar__navigation {
+  display: flex;
+  align-items: center;
+  column-gap: 16px;
+}
+
+.calendar__modes {
+  display: flex;
+  align-items: center;
+  column-gap: 16px;
+}
+
+.calendar__mode {
+  text-transform: capitalize;
+}
+
+.day-title__container {
+  display: grid;
+}
+
+.days__title__container--seven-cols,
+.days__container--seven-cols {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.days__title__container--one-col,
+.days__container--one-col {
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+.day__title {
+  padding: 8px;
+  text-align: center;
+  border-collapse: collapse;
+
+  border: 1px solid #e5e7ebff;
+}
+
+.days__container {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  flex: 1 1 0;
+
+  overflow-y: auto;
+}
+
 .day {
-  @apply border;
+  border: 1px solid #e5e7ebff;
+  border-collapse: collapse;
+}
+
+.day--empty {
+  background: #f9fafbff;
 }
 
 .day__header {
   text-align: center;
 
-  padding: 8px;
+  padding: 4px;
 
   font-size: 0.875rem /* 14px */;
   line-height: 1.25rem; /* 20px */
 }
-.day--empty {
-  @apply bg-gray-50;
-}
-.day .header {
-  @apply p-2 text-center text-sm;
+
+.day__content {
+  display: flex;
+  flex-direction: column;
+  row-gap: 4px;
+
+  padding: 4px;
 }
 
 .current-day {
-  @apply font-bold;
+  font-weight: bold;
+}
+
+.week {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+}
+
+.week__days--empty {
+  grid-column-start: 1;
+  grid-column-end: 2;
+
+  border: 1px solid #e5e7ebff;
+}
+
+.week__day__title {
+  width: 100%;
+
+  border: 1px solid #e5e7ebff;
+
+  padding: 8px;
+
+  text-align: center;
+}
+
+.week__days__container {
+  width: 100%;
+  min-height: 3rem;
+
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+
+  grid-column-start: 1;
+  grid-column-end: 9;
+
+  border-style: solid;
+  border-color: #e5e7ebff;
+
+  border-bottom-width: 1px;
+}
+
+.week__day__time {
+  grid-column-start: 1;
+  grid-column-end: 2;
+
+  border-style: solid;
+  border-color: #e5e7ebff;
+
+  border-bottom-width: 1px;
+  border-right-width: 1px;
+
+  text-align: center;
+}
+
+.week__day {
+  display: flex;
+  flex-direction: column;
+  row-gap: 4px;
+
+  padding: 8px;
+
+  border-style: solid;
+  border-color: #e5e7ebff;
+
+  border-right-width: 1px;
 }
 </style>
