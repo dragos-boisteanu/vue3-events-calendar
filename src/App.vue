@@ -1,5 +1,5 @@
 <script setup>
-import Calendar from '@/components/calendar.vue'
+import Calendar from '@/components/calendarComponent.vue'
 const events = [
   {
     id: 1,
@@ -15,6 +15,12 @@ const events = [
     id: 3,
     date: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
     title: 'Tomorrow event'
+  },
+  {
+    id: 4,
+    date: new Date(new Date().getTime() + 24 * 60 * 60 * 1000),
+    title: 'Tomorrow all day event',
+    allDay: true
   }
 ]
 

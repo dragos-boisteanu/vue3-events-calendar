@@ -1,5 +1,8 @@
 <script setup>
 import { computed, ref } from 'vue'
+import DayComponent from '@/components/dayComponent.vue'
+import WeekComponent from '@/components/weekComponent.vue'
+import MonthComponent from '@/components/monthComponent.vue'
 
 const months = [
   { id: 0, name: 'January' },
@@ -149,12 +152,14 @@ const daysOfPreviousMonth = computed(() => {
 
   const lastDay = new Date(year.value, month.value, 0)
 
-  console.log('firstDay', firstDay)
   while (firstDay <= lastDay) {
+    const events = props.events.filter(
+      (event) => new Date(event.date).setHours(0, 0, 0, 0) === firstDay.getTime()
+    )
     const day = {
       id: firstDay.getDate(),
       date: firstDay,
-      events: []
+      events
     }
     days.push(day)
 
@@ -176,10 +181,13 @@ const daysOfNextMonth = computed(() => {
     const lastDay = new Date(year.value, month.value + 1, 7 - lastDayOfMonth.getDay())
 
     while (firstDay <= lastDay) {
+      const events = props.events.filter(
+        (event) => new Date(event.date).setHours(0, 0, 0, 0) === firstDay.getTime()
+      )
       const day = {
         id: firstDay.getDate(),
         date: firstDay,
-        events: []
+        events
       }
       days.push(day)
 
@@ -198,13 +206,12 @@ const monthDays = computed(() => {
   const days = []
 
   while (firstMonthDate <= lastMonthDate) {
-    const date = new Date(firstMonthDate)
     const events = props.events.filter(
-      (event) => new Date(event.date).setHours(0, 0, 0, 0) === date.getTime()
+      (event) => new Date(event.date).setHours(0, 0, 0, 0) === firstMonthDate.getTime()
     )
     days.push({
-      id: date.getDate(),
-      date,
+      id: firstMonthDate.getDate(),
+      date: firstMonthDate,
       events
     })
 
@@ -254,18 +261,6 @@ const weekDays = computed(() => {
 
   return result
 })
-
-const getCurrentDayEventsByHour = (time) => {
-  const currentDayEvents = props.events.filter(
-    (event) =>
-      new Date(event.date).setHours(0, 0, 0, 0) === new Date(currentDate.value).setHours(0, 0, 0, 0)
-  )
-
-  return currentDayEvents.filter((event) => event.date.getHours() === Number.parseInt(time))
-}
-const getDayEventsByHour = (time, events) => {
-  return events.filter((event) => event.date.getHours() === Number.parseInt(time))
-}
 
 const getTitleForDay = (includeMonthName) => {
   let day = ''
@@ -370,35 +365,42 @@ const next = () => {
       break
     // day
     case modes.Day:
-      currentDate.value = new Date(
-        currentDate.value.getFullYear(),
-        currentDate.value.getMonth(),
-        currentDate.value.getDate() + 1
-      )
+      {
+        currentDate.value = new Date(
+          currentDate.value.getFullYear(),
+          currentDate.value.getMonth(),
+          currentDate.value.getDate() + 1
+        )
+      }
+
       break
   }
 }
+
+const currentDateEvents = computed(() => {
+  if (mode.value === modes.Day) {
+    return getCurrentDayEvents(currentDate.value)
+  }
+
+  return []
+})
+const getCurrentDayEvents = (currentDateValue) => {
+  return props.events.filter(
+    (event) =>
+      new Date(event.date).setHours(0, 0, 0, 0) === new Date(currentDateValue).setHours(0, 0, 0, 0)
+  )
+}
 const setToday = () => (currentDate.value = new Date(today))
 
-const setMode = (m) => (mode.value = m)
-
-const isCurrentDay = (day) => {
-  const todayDate = today.getDate()
-  const todayMonth = today.getMonth()
-  const currentMonth = currentDate.value.getMonth()
-
-  let isToday = false
-
-  if (todayDate === day && currentMonth === todayMonth) isToday = true
-
-  return isToday
+const setMode = (m) => {
+  mode.value = m
 }
 </script>
 
 <template>
   <div class="calendar">
     <div class="calendar__header">
-      <div class="calendar__navigation flex items-center gap-x-4 bg-white">
+      <div class="calendar__navigation">
         <button @click="previous">Prev</button>
         <button @click="next">Next</button>
         <button @click="setToday">Today</button>
@@ -431,93 +433,43 @@ const isCurrentDay = (day) => {
     <div
       class="days__container"
       :class="{
-        'days__container--seven-cols grid-cols-7': mode === modes.Month,
-        'days__container--one-col grid-cols-1':
-          mode === modes.Week || mode === modes.Day || mode === modes.List
+        'days__container--seven-cols': mode === modes.Month,
+        'days__container--one-col': mode === modes.Week || mode === modes.Day || mode === modes.List
       }"
     >
       <!--      month structure  -->
-      <template v-if="mode === modes.Month">
-        <div v-for="day in daysOfPreviousMonth" :key="day" class="day day--empty">
-          <div class="day__header">{{ day.id }}</div>
-          <div class="day__content">
-            <slot />
-          </div>
-        </div>
-
-        <div v-for="day in monthDays" :key="day.id" class="day">
-          <div class="day__header" :class="{ 'current-day': isCurrentDay(day.id) }">
-            {{ day.id }}
-          </div>
-          <div class="day__content">
-            <slot :event="event" v-for="event in day.events" :key="event.id" />
-          </div>
-        </div>
-
-        <div v-for="day in daysOfNextMonth" :key="day" class="day day--empty">
-          <div class="day__header">{{ day.id }}</div>
-          <div class="day__content">
-            <slot :event="event" v-for="event in day.events" :key="event.id" />
-          </div>
-        </div>
-      </template>
+      <month-component
+        v-if="mode === modes.Month"
+        v-slot="{ event }"
+        :today="today"
+        :month-days="monthDays"
+        :prev-month-days="daysOfPreviousMonth"
+        :next-month-days="daysOfNextMonth"
+      >
+        <slot :event="event" />
+      </month-component>
 
       <!--      week structure-->
-      <template v-if="mode === modes.Week">
-        <div class="week">
-          <div class="week__days--empty" />
-          <div
-            class="week__day__title"
-            :class="{ 'current-day': isCurrentDay(day.id) }"
-            v-for="day in weekDays"
-            :key="day.id"
-          >
-            {{ day.name }}
-          </div>
-          <div class="week__days__container">
-            <div class="week__day__time">All day</div>
-            <div v-for="day in weekDays" :key="day.id" class="week__day">
-              <!--              TODO: all day events list-->
-            </div>
-          </div>
-          <div class="week__days__container" v-for="(time, index) in hours24" :key="index">
-            <div class="week__day__time">
-              {{ time }}
-            </div>
-            <div v-for="day in weekDays" :key="day.id" class="week__day">
-              <slot
-                :event="event"
-                v-for="event in getDayEventsByHour(time, day.events)"
-                :key="event.id"
-              />
-            </div>
-          </div>
-        </div>
-      </template>
+      <week-component
+        v-if="mode === modes.Week"
+        :today="today"
+        :hours="hours24"
+        :week-days="weekDays"
+        v-slot="{ event }"
+      >
+        <slot :event="event" />
+      </week-component>
 
       <!--      day structure -->
-      <template v-if="mode === modes.Day">
-        <div class="day__containerw flex size-full">
-          <div class="w-full">
-            <div class="flex h-36 w-full items-start justify-stretch border">
-              <div class="h-full w-24 border-r p-2 text-center">All day</div>
-              <div class="w-full flex-1 basis-full px-2">
-                <!--                TODO: get all day events-->
-              </div>
-            </div>
-            <div class="flex h-36 items-start border" v-for="(time, index) in hours24" :key="index">
-              <div class="h-full w-24 border-r p-2 text-center">{{ time }}</div>
-              <div class="flex w-full flex-1 basis-full flex-col gap-y-0.5 px-2">
-                <slot
-                  :event="event"
-                  v-for="event in getCurrentDayEventsByHour(time)"
-                  :key="event.id"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </template>
+      <day-component
+        v-if="mode === modes.Day"
+        :hours="hours24"
+        :date="currentDate"
+        :events="currentDateEvents"
+        v-slot="{ event }"
+      >
+        <slot :event="event" />
+      </day-component>
     </div>
   </div>
 </template>
@@ -584,99 +536,5 @@ const isCurrentDay = (day) => {
   flex: 1 1 0;
 
   overflow-y: auto;
-}
-
-.day {
-  border: 1px solid #e5e7ebff;
-  border-collapse: collapse;
-}
-
-.day--empty {
-  background: #f9fafbff;
-}
-
-.day__header {
-  text-align: center;
-
-  padding: 4px;
-
-  font-size: 0.875rem /* 14px */;
-  line-height: 1.25rem; /* 20px */
-}
-
-.day__content {
-  display: flex;
-  flex-direction: column;
-  row-gap: 4px;
-
-  padding: 4px;
-}
-
-.current-day {
-  font-weight: bold;
-}
-
-.week {
-  display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
-}
-
-.week__days--empty {
-  grid-column-start: 1;
-  grid-column-end: 2;
-
-  border: 1px solid #e5e7ebff;
-}
-
-.week__day__title {
-  width: 100%;
-
-  border: 1px solid #e5e7ebff;
-
-  padding: 8px;
-
-  text-align: center;
-}
-
-.week__days__container {
-  width: 100%;
-  min-height: 3rem;
-
-  display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
-
-  grid-column-start: 1;
-  grid-column-end: 9;
-
-  border-style: solid;
-  border-color: #e5e7ebff;
-
-  border-bottom-width: 1px;
-}
-
-.week__day__time {
-  grid-column-start: 1;
-  grid-column-end: 2;
-
-  border-style: solid;
-  border-color: #e5e7ebff;
-
-  border-bottom-width: 1px;
-  border-right-width: 1px;
-
-  text-align: center;
-}
-
-.week__day {
-  display: flex;
-  flex-direction: column;
-  row-gap: 4px;
-
-  padding: 8px;
-
-  border-style: solid;
-  border-color: #e5e7ebff;
-
-  border-right-width: 1px;
 }
 </style>
