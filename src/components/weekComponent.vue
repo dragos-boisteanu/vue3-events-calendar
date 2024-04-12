@@ -104,6 +104,8 @@ const getAllDayEvents = (events) => {
   border-right-width: 1px;
 
   text-align: center;
+
+  padding: 8px;
 }
 
 .week__day {

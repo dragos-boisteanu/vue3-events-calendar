@@ -30,7 +30,7 @@ const handleEventClick = (event) => {
 </script>
 
 <template>
-  <div class="size-full">
+  <div>
     <calendar :events="events" v-slot="{ event }">
       <div
         class="flex w-full cursor-pointer items-center gap-x-2 bg-sky-500 p-0.5 text-sm text-white hover:shadow"
