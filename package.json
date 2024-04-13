@@ -36,6 +36,7 @@
   "peerDependencies": {
     "vue": "^3.4.21"
   },
+  "style": "dist/style.css",
   "files": [
     "dist/*"
   ]
