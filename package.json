@@ -4,11 +4,11 @@
   "description": "Vue3 Calendar with events",
   "license": "MIT",
   "main": "./dist/vue3-events-calendar.umd.js",
-  "module": "./dist/vue3-events-calendar.es.js",
+  "module": "./dist/vue3-events-calendar.js",
   "exports": {
     ".": {
-      "import": "./dist/vue3-events-calendarjs",
-      "require": "./dist/vue3-events-calendar.umd.cjs"
+      "import": "./dist/vue3-events-calendar.esm.js",
+      "require": "./dist/vue3-events-calendar.js"
     },
     "./style.css": "./dist/style.css"
   },
