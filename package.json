@@ -3,8 +3,8 @@
   "author": "Boisteanu Dragos",
   "description": "Vue3 Calendar with events",
   "license": "MIT",
-  "main": "./dist/vue3-events-calendar.umd.cjs",
-  "module": "./dist/vue3-events-calendar.js",
+  "main": "./dist/vue3-events-calendar.umd.js",
+  "module": "./dist/vue3-events-calendar.es.js",
   "exports": {
     ".": {
       "import": "./dist/vue3-events-calendarjs",
