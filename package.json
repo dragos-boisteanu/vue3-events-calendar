@@ -13,7 +13,7 @@
   },
   "./style.css": "./dist/style.css",
   "./dist/*": "./dist/*",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "private": false,
   "type": "module",
   "scripts": {
