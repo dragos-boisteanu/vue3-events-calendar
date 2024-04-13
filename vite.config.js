@@ -8,8 +8,6 @@ import path from "path"
 const __filename = url.fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-
-console.log("dirname", __dirname)
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [

@@ -9,8 +9,7 @@
     ".": {
       "import": "./dist/vue3-events-calendar.js",
       "require": "./dist/vue3-events-calendar.umd.cjs"
-    },
-    "./style.css": "./dist/style.css"
+    }
   },
   "version": "1.0.8",
   "private": false,

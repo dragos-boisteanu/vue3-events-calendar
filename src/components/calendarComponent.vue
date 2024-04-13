@@ -474,6 +474,8 @@ const setMode = (m) => {
 </template>
 
 <style scoped>
+@import "../assets/main.css";
+
 .calendar {
   display: flex;
   flex-direction: column;
