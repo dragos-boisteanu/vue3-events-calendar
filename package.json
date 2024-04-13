@@ -1,8 +1,11 @@
 {
-  "name": "-",
-  "version": "0.0.0",
-  "private": true,
-  "type": "module",
+  "name": "vue3-events-calendar",
+  "author": "Boisteanu Dragos",
+  "description": "Vue3 Calendar with events",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "version": "1.0.0",
+  "private": false,
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -21,5 +24,8 @@
     "eslint-plugin-vue": "^9.17.0",
     "prettier": "^3.2.5",
     "vite": "^5.1.5"
-  }
+  },
+  "files": [
+    "dist/*"
+  ]
 }
