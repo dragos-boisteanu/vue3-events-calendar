@@ -9,10 +9,10 @@
     ".": {
       "import": "./dist/vue3-events-calendar.js",
       "require": "./dist/vue3-events-calendar.umd.cjs"
-    }
+    },
+    "./style.css": "./dist/style.css",
+    "./dist/*": "./dist/*"
   },
-  "./style.css": "./dist/style.css",
-  "./dist/*": "./dist/*",
   "version": "1.0.12",
   "private": false,
   "type": "module",
