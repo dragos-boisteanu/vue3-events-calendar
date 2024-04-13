@@ -11,6 +11,8 @@
       "require": "./dist/vue3-events-calendar.umd.cjs"
     }
   },
+  "./style.css": "./dist/style.css",
+  "./dist/*": "./dist/*",
   "version": "1.0.10",
   "private": false,
   "type": "module",
