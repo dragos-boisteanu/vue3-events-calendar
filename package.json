@@ -8,7 +8,7 @@
   "exports": {
     ".": {
       "import": "./dist/vue3-events-calendar.js",
-      "require": "./dist/vue3-events-calendar.umd.js"
+      "require": "./dist/vue3-events-calendar.umd.cjs"
     },
     "./style.css": "./dist/style.css"
   },
