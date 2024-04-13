@@ -120,7 +120,6 @@ const modes = {
   Month: 'month',
   Week: 'week',
   Day: 'day',
-  List: 'list'
 }
 
 const props = defineProps({
