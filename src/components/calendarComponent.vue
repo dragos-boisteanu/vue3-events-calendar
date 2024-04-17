@@ -125,100 +125,16 @@ const modes = {
 const props = defineProps({
   events: { type: Array, required: true, default: () => [] }
 })
+const emits = defineEmits(['monthChanged'])
+
 
 const today = new Date()
 
 const mode = ref(modes.Month)
-
 const currentDate = ref(new Date())
 
 const year = computed(() => currentDate.value.getFullYear())
 const month = computed(() => currentDate.value.getMonth())
-
-const daysOfPreviousMonth = computed(() => {
-  if (mode.value !== modes.Month) return []
-
-  const firstDayOfMonth = new Date(year.value, month.value, 1)
-  const days = []
-
-  let firstDay
-
-  if (firstDayOfMonth.getDay() > 0) {
-    firstDay = new Date(year.value, month.value, 2 - firstDayOfMonth.getDay())
-  } else {
-    firstDay = new Date(year.value, month.value, -5)
-  }
-
-  const lastDay = new Date(year.value, month.value, 0)
-
-  while (firstDay <= lastDay) {
-    const events = props.events.filter(
-      (event) => new Date(event.date).setHours(0, 0, 0, 0) === firstDay.getTime()
-    )
-    const day = {
-      id: firstDay.getDate(),
-      date: firstDay,
-      events
-    }
-    days.push(day)
-
-    firstDay.setDate(firstDay.getDate() + 1)
-  }
-  // }
-
-  return days
-})
-
-const daysOfNextMonth = computed(() => {
-  if (mode.value !== modes.Month) return []
-
-  const lastDayOfMonth = new Date(year.value, month.value + 1, 0)
-  const days = []
-
-  if (lastDayOfMonth.getDay() > 0) {
-    const firstDay = new Date(year.value, month.value + 1, 1)
-    const lastDay = new Date(year.value, month.value + 1, 7 - lastDayOfMonth.getDay())
-
-    while (firstDay <= lastDay) {
-      const events = props.events.filter(
-        (event) => new Date(event.date).setHours(0, 0, 0, 0) === firstDay.getTime()
-      )
-      const day = {
-        id: firstDay.getDate(),
-        date: firstDay,
-        events
-      }
-      days.push(day)
-
-      firstDay.setDate(firstDay.getDate() + 1)
-    }
-  }
-
-  return days
-})
-
-const monthDays = computed(() => {
-  if (mode.value !== modes.Month) return
-
-  const firstMonthDate = new Date(year.value, month.value, 1)
-  const lastMonthDate = new Date(year.value, month.value + 1, 0)
-  const days = []
-
-  while (firstMonthDate <= lastMonthDate) {
-    const events = props.events.filter(
-      (event) => new Date(event.date).setHours(0, 0, 0, 0) === firstMonthDate.getTime()
-    )
-    days.push({
-      id: firstMonthDate.getDate(),
-      date: firstMonthDate,
-      events
-    })
-
-    firstMonthDate.setDate(firstMonthDate.getDate() + 1)
-  }
-
-  return days
-})
 
 const firstWeekDay = computed(() => {
   const day =
@@ -279,7 +195,7 @@ const getTitleForDay = (includeMonthName) => {
 
   return day
 }
-const daysTitle = computed(() => {
+/*const daysTitle = computed(() => {
   let titles = []
   switch (mode.value) {
     case modes.Month:
@@ -291,7 +207,7 @@ const daysTitle = computed(() => {
   }
 
   return titles
-})
+})*/
 const title = computed(() => {
   let title = ''
 
@@ -353,6 +269,7 @@ const next = () => {
         currentDate.value.getMonth() + 1,
         1
       )
+        emits('monthChanged', currentDate.value)
       break
     // week
     case modes.Week:
@@ -361,6 +278,7 @@ const next = () => {
         lastWeekDay.value.getMonth(),
         lastWeekDay.value.getDate() + 1
       )
+      //   TODO: emit event when month changes
       break
     // day
     case modes.Day:
@@ -370,11 +288,18 @@ const next = () => {
           currentDate.value.getMonth(),
           currentDate.value.getDate() + 1
         )
+        //   TODO: emit event when month changes
       }
 
       break
   }
 }
+
+const setToday = () => {
+  console.log("setToday-today", today)
+  currentDate.value = new Date(today)
+}
+
 
 const currentDateEvents = computed(() => {
   if (mode.value === modes.Day) {
@@ -389,7 +314,6 @@ const getCurrentDayEvents = (currentDateValue) => {
       new Date(event.date).setHours(0, 0, 0, 0) === new Date(currentDateValue).setHours(0, 0, 0, 0)
   )
 }
-const setToday = () => (currentDate.value = new Date(today))
 
 const setMode = (m) => {
   mode.value = m
@@ -418,32 +342,29 @@ const setMode = (m) => {
         </button>
       </div>
     </div>
-    <div
+<!--    <div
       class="day-title__container"
       :class="{
-        'days__title__container--seven-cols': mode === modes.Month || mode === modes.Week,
-        'days__title__container--one-col': mode === modes.Day || mode === modes.List
+        'days__title__container&#45;&#45;seven-cols': mode === modes.Month || mode === modes.Week,
+        'days__title__container&#45;&#45;one-col': mode === modes.Day || mode === modes.List
       }"
     >
       <div v-for="(day, index) in daysTitle" :key="index" class="day__title">
         {{ day }}
       </div>
-    </div>
+    </div>-->
     <div
-      class="days__container"
-      :class="{
-        'days__container--seven-cols': mode === modes.Month,
-        'days__container--one-col': mode === modes.Week || mode === modes.Day || mode === modes.List
-      }"
+      style="display: flex;flex-direction: column;overflow: auto; height: 100%"
     >
       <!--      month structure  -->
       <month-component
         v-if="mode === modes.Month"
         v-slot="{ event }"
         :today="today"
-        :month-days="monthDays"
-        :prev-month-days="daysOfPreviousMonth"
-        :next-month-days="daysOfNextMonth"
+        :year="year"
+        :month="month"
+        :days="days"
+        :events="events"
       >
         <slot :event="event" />
       </month-component>
@@ -508,34 +429,10 @@ const setMode = (m) => {
   text-transform: capitalize;
 }
 
-.day-title__container {
-  display: grid;
-}
-
-.days__title__container--seven-cols,
-.days__container--seven-cols {
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-}
-
-.days__title__container--one-col,
-.days__container--one-col {
-  grid-template-columns: repeat(1, minmax(0, 1fr));
-}
-
-.day__title {
-  padding: 8px;
-  text-align: center;
-  border-collapse: collapse;
-
-  border: 1px solid #e5e7ebff;
-}
-
 .days__container {
   display: grid;
   width: 100%;
   height: 100%;
   flex: 1 1 0;
-
-  overflow-y: auto;
 }
 </style>
