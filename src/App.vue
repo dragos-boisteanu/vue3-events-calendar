@@ -27,11 +27,15 @@ const events = [
 const handleEventClick = (event) => {
   console.log('event', event)
 }
+
+const handleMothChanged = (month) => {
+  console.log("monthChanged", month)
+}
 </script>
 
 <template>
   <div>
-    <calendar :events="events" v-slot="{ event }">
+    <calendar :events="events" v-slot="{ event }" @month-changed="handleMothChanged">
       <div
         class="flex w-full cursor-pointer items-center gap-x-2 bg-sky-500 p-0.5 text-sm text-white hover:shadow"
         @click="handleEventClick(event)"

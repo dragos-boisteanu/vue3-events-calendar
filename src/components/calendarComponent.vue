@@ -241,23 +241,37 @@ const previous = () => {
         currentDate.value.getMonth() - 1,
         1
       )
+      emits('monthChanged', currentDate.value)
       break
     case modes.Week:
       {
-        currentDate.value = new Date(
-          firstWeekDay.value.getFullYear(),
-          firstWeekDay.value.getMonth(),
-          firstWeekDay.value.getDate() - 7
-        )
+        const previousWeek = new Date(
+            firstWeekDay.value.getFullYear(),
+            firstWeekDay.value.getMonth(),
+            firstWeekDay.value.getDate() - 7)
+
+        if(currentDate.value.getMonth() !== previousWeek.getMonth()) {
+          emits('monthChanged', previousWeek.value)
+        }
+
+        currentDate.value = previousWeek
       }
       break
-    case modes.Day:
-      currentDate.value = new Date(
-        currentDate.value.getFullYear(),
-        currentDate.value.getMonth(),
-        currentDate.value.getDate() - 1
+    case modes.Day: {
+      const previousDay = new Date(
+          currentDate.value.getFullYear(),
+          currentDate.value.getMonth(),
+          currentDate.value.getDate() - 1
       )
+
+      if(currentDate.value.getMonth() !== previousDay.getMonth()) {
+        emits('monthChanged', previousDay.value)
+      }
+
+      currentDate.value = previousDay
+
       break
+      }
   }
 }
 const next = () => {
@@ -269,29 +283,39 @@ const next = () => {
         currentDate.value.getMonth() + 1,
         1
       )
-        emits('monthChanged', currentDate.value)
+      emits('monthChanged', currentDate.value)
       break
     // week
-    case modes.Week:
-      currentDate.value = new Date(
-        lastWeekDay.value.getFullYear(),
-        lastWeekDay.value.getMonth(),
-        lastWeekDay.value.getDate() + 1
+    case modes.Week: {
+      const nextWeek = new Date(
+          lastWeekDay.value.getFullYear(),
+          lastWeekDay.value.getMonth(),
+          lastWeekDay.value.getDate() + 1
       )
-      //   TODO: emit event when month changes
+
+      if (currentDate.value.getMonth() !== nextWeek.getMonth()) {
+        emits('monthChanged', nextWeek)
+      }
+
+      currentDate.value = nextWeek
       break
+    }
     // day
-    case modes.Day:
-      {
-        currentDate.value = new Date(
+    case modes.Day: {
+      const nextDay = new Date(
           currentDate.value.getFullYear(),
           currentDate.value.getMonth(),
           currentDate.value.getDate() + 1
-        )
-        //   TODO: emit event when month changes
+      )
+
+      if (currentDate.value.getMonth() !== nextDay.getMonth()) {
+        emits('monthChanged', nextDay)
       }
 
+      currentDate.value = nextDay
+
       break
+    }
   }
 }
 
@@ -342,17 +366,6 @@ const setMode = (m) => {
         </button>
       </div>
     </div>
-<!--    <div
-      class="day-title__container"
-      :class="{
-        'days__title__container&#45;&#45;seven-cols': mode === modes.Month || mode === modes.Week,
-        'days__title__container&#45;&#45;one-col': mode === modes.Day || mode === modes.List
-      }"
-    >
-      <div v-for="(day, index) in daysTitle" :key="index" class="day__title">
-        {{ day }}
-      </div>
-    </div>-->
     <div
       style="display: flex;flex-direction: column;overflow: auto; height: 100%"
     >
@@ -384,6 +397,7 @@ const setMode = (m) => {
       <day-component
         v-if="mode === modes.Day"
         :hours="hours24"
+        :days="days"
         :date="currentDate"
         :events="currentDateEvents"
         v-slot="{ event }"

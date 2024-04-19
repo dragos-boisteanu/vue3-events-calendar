@@ -14,7 +14,7 @@ const isCurrentDay = (day) => {
 }
 
 const getDayEventsByHour = (time, events) => {
-  return events.filter((event) => event.date.getHours() === Number.parseInt(time))
+  return events.filter((event) =>  !event.allDay && event.date.getHours() === Number.parseInt(time))
 }
 
 const getAllDayEvents = (events) => {
