@@ -3,6 +3,7 @@
   "author": "Boisteanu Dragos",
   "description": "Vue3 Calendar with events",
   "license": "MIT",
+  "repository": "https://github.com/dragos-boisteanu/vue3-events-calendar",
   "main": "./dist/vue3-events-calendar.umd.cjs",
   "module": "./dist/vue3-events-calendar.js",
   "exports": {
