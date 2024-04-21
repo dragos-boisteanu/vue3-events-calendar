@@ -1,8 +1,15 @@
 <script setup>
+import {computed} from "vue";
+
 const props = defineProps({
-  weekDays: { type: Array, required: false, default: () => [] },
   hours: { type: Array, required: true },
-  today: { type: Date, required: true }
+  days: { type: Array, required: true },
+  events: { type: Array, required: true },
+
+  today: { type: Date, required: true },
+  currentDate: {type: Date, required: true},
+  firstWeekDay: {type: Date, required: true},
+  lastWeekDay: {type: Date, required: true},
 })
 
 const isCurrentDay = (day) => {
@@ -20,6 +27,36 @@ const getDayEventsByHour = (time, events) => {
 const getAllDayEvents = (events) => {
   return events.filter((event) => event.allDay)
 }
+
+
+const weekDays = computed(() => {
+  // if (props.mode.value !== modes.Week) return
+
+  let result = []
+
+  const firstDate = new Date(props.firstWeekDay)
+
+  while (firstDate <= props.lastWeekDay) {
+    const date = new Date(firstDate)
+
+    const dayOfWeek = props.days.find((day) => firstDate.getDay() === day.id)
+    const name = `${dayOfWeek.short} ${firstDate.getDate()}/${firstDate.getMonth() + 1}`
+
+    const events = props.events.filter(
+        (event) => new Date(event.date).setHours(0, 0, 0, 0) === date.getTime()
+    )
+
+    result.push({
+      id: firstDate.getDate(),
+      name,
+      date,
+      events
+    })
+    firstDate.setDate(firstDate.getDate() + 1)
+  }
+
+  return result
+})
 </script>
 
 <template>
@@ -28,33 +65,33 @@ const getAllDayEvents = (events) => {
     <div
       class="week__day__title"
       :class="{ 'current-day': isCurrentDay(day) }"
-      v-for="day in props.weekDays"
+      v-for="day in weekDays"
       :key="day.id"
     >
       {{ day.name }}
     </div>
   </div>
 
-    <div class="week__events__container">
-      <div class="day__events">
-        <div class="week__day__time">All day</div>
-        <div v-for="day in weekDays" :key="day.id" class="week__day">
-          <slot :event="event" v-for="event in getAllDayEvents(day.events)" :key="event.id" />
-        </div>
-      </div>
-      <div class="day__events" v-for="(time, index) in hours" :key="index">
-        <div class="week__day__time">
-          {{ time }}
-        </div>
-        <div v-for="day in weekDays" :key="day.id" class="week__day">
-          <slot
-              :event="event"
-              v-for="event in getDayEventsByHour(time, day.events)"
-              :key="event.id"
-          />
-        </div>
+  <div class="week__events__container">
+    <div class="day__events">
+      <div class="week__day__time">All day</div>
+      <div v-for="day in weekDays" :key="day.id" class="week__day">
+        <slot :event="event" v-for="event in getAllDayEvents(day.events)" :key="event.id" />
       </div>
     </div>
+    <div class="day__events" v-for="(time, index) in hours" :key="index">
+      <div class="week__day__time">
+        {{ time }}
+      </div>
+      <div v-for="day in weekDays" :key="day.id" class="week__day">
+        <slot
+            :event="event"
+            v-for="event in getDayEventsByHour(time, day.events)"
+            :key="event.id"
+        />
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -62,18 +99,22 @@ const getAllDayEvents = (events) => {
 .week__days__titles {
   display: grid;
   grid-template-columns: repeat(8, minmax(0, 1fr));
+  padding-right: 15px;
 }
 .week__days--empty {
-  grid-column-start: 1;
-  grid-column-end: 2;
-
   border: 1px solid #e5e7ebff;
 }
 
 .week__day__title {
   width: 100%;
 
-  border: 1px solid #e5e7ebff;
+  border-style: solid;
+  border-color: #e5e7ebff;
+
+  border-top-width: 1px;
+  border-right-width: 1px;
+  border-bottom-width: 1px;
+
 
   padding: 8px;
 
@@ -98,7 +139,6 @@ const getAllDayEvents = (events) => {
 
   border-style: solid;
   border-color: #e5e7ebff;
-
   border-bottom-width: 1px;
 }
 
@@ -109,7 +149,6 @@ const getAllDayEvents = (events) => {
   border-style: solid;
   border-color: #e5e7ebff;
 
-  border-bottom-width: 1px;
   border-right-width: 1px;
 
   text-align: center;

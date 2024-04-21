@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import DayComponent from '@/components/dayComponent.vue'
 import WeekComponent from '@/components/weekComponent.vue'
 import MonthComponent from '@/components/monthComponent.vue'
+import {last} from "eslint-plugin-vue/lib/utils/indent-utils.js";
 
 const months = [
   { id: 0, name: 'January' },
@@ -136,45 +137,19 @@ const currentDate = ref(new Date())
 const year = computed(() => currentDate.value.getFullYear())
 const month = computed(() => currentDate.value.getMonth())
 
+
 const firstWeekDay = computed(() => {
+  console.log("firstWeekDay", currentDate.value.getDay())
+  console.log("firstWeekDate", currentDate.value.getDate())
   const day =
-    currentDate.value.getDate() -
-    currentDate.value.getDay() +
-    (currentDate.value.getDay() === 0 ? -6 : 1)
+      currentDate.value.getDate() -
+      currentDate.value.getDay() +
+      (currentDate.value.getDay() === 0 ? -6 : 1)
   return new Date(currentDate.value.getFullYear(), currentDate.value.getMonth(), day)
 })
 const lastWeekDay = computed(() => {
   const date = new Date(currentDate.value)
-  return new Date(new Date(date.setDate(date.getDate() - date.getDay() + 7)))
-})
-
-const weekDays = computed(() => {
-  if (mode.value !== modes.Week) return
-
-  let result = []
-
-  const firstDate = new Date(firstWeekDay.value)
-
-  while (firstDate <= lastWeekDay.value) {
-    const date = new Date(firstDate)
-
-    const dayOfWeek = days.find((day) => firstDate.getDay() === day.id)
-    const name = `${dayOfWeek.short} ${firstDate.getDate()}/${firstDate.getMonth() + 1}`
-
-    const events = props.events.filter(
-      (event) => new Date(event.date).setHours(0, 0, 0, 0) === date.getTime()
-    )
-
-    result.push({
-      id: firstDate.getDate(),
-      name,
-      date,
-      events
-    })
-    firstDate.setDate(firstDate.getDate() + 1)
-  }
-
-  return result
+  return new Date(new Date(date.setDate(date.getDate() - date.getDay() + (currentDate.value.getDay() === 0 ? 0 : 7))))
 })
 
 const getTitleForDay = (includeMonthName) => {
@@ -387,9 +362,12 @@ const setMode = (m) => {
         v-if="mode === modes.Week"
         :today="today"
         :hours="hours24"
-        :week-days="weekDays"
+        :current-date="currentDate"
+        :last-week-day="lastWeekDay"
+        :first-week-day="firstWeekDay"
+        :events="events"
         v-slot="{ event }"
-      >
+       :days="days">
         <slot :event="event" />
       </week-component>
 
