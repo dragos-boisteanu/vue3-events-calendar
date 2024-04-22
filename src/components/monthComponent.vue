@@ -154,14 +154,20 @@ const monthDays = computed(() => {
 
   border: 1px solid #e5e7ebff;
   border-bottom: none;
+  border-left: none;
 }
 .month__days {
   flex: 1 1 0;
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-template-rows: repeat(5, minmax(0, 1fr));
+  overflow-y: auto;
 }
 .day {
   border: 1px solid #e5e7ebff;
+  border-bottom: none;
+  border-left: none;
+
 }
 .day--empty {
   background: #f9fafbff;

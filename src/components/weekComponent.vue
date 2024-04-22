@@ -98,7 +98,7 @@ const weekDays = computed(() => {
 
 .week__days__titles {
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
+  grid-template-columns: 96px  repeat(7, minmax(0, 1fr));
   padding-right: 15px;
 }
 .week__days--empty {
@@ -125,18 +125,20 @@ const weekDays = computed(() => {
   height: 100%;
   width: 100%;
   overflow-y:auto;
+  scrollbar-gutter: stable;
+
+  display: flex;
+  flex-direction: column;
 }
 
 .day__events {
+  flex: 1 1 0;
+
   width: 100%;
-  min-height: 3rem;
-
   display: grid;
-  grid-template-columns: repeat(8, minmax(0, 1fr));
-
-  grid-column-start: 1;
-  grid-column-end: 9;
-
+  grid-template-columns: 96px repeat(7, minmax(0, 1fr));
+  grid-template-rows: max-content;
+  
   border-style: solid;
   border-color: #e5e7ebff;
   border-bottom-width: 1px;
@@ -145,6 +147,7 @@ const weekDays = computed(() => {
 .week__day__time {
   grid-column-start: 1;
   grid-column-end: 2;
+
 
   border-style: solid;
   border-color: #e5e7ebff;

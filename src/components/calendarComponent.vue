@@ -342,7 +342,7 @@ const setMode = (m) => {
       </div>
     </div>
     <div
-      style="display: flex;flex-direction: column;overflow: auto; height: 100%"
+        class="calendar__content"
     >
       <!--      month structure  -->
       <month-component
@@ -403,6 +403,13 @@ const setMode = (m) => {
   justify-content: space-between;
 
   padding: 16px;
+}
+
+.calendar__content {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%
 }
 
 .calendar__navigation {

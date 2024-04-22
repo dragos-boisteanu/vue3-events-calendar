@@ -47,11 +47,15 @@ const dayTitle = computed(() => props.days.find(day => day.id === props.date.get
 .day {
   width: 100%;
   height: 100%;
+
+  display: flex;
+  flex-direction: column;
 }
 
 .day_title__container {
   text-align: center;
-  width: 100%
+  width: 100%;
+  padding-right: 16px;
 }
 
 .day__title {
@@ -66,26 +70,32 @@ const dayTitle = computed(() => props.days.find(day => day.id === props.date.get
 .day__events {
   height: 100%;
   overflow-y: auto;
+  scrollbar-gutter: stable;
+
+  border: 1px solid #e5e7ebff;
+  border-top: none;
+
+  display: flex;
+  flex-direction: column;
 }
 
 .day__time {
-  display: flex;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  grid-template-rows: max-content;
 
-  min-height: 47px;
+
 
   border: 1px solid #e5e7ebff;
-  border-top: none
+  border-top: none;
+
+  flex: 1 1 auto;
 }
 
 .day__time__title {
   height: 100%;
-  width: 94px;
+  width: 96px;
 
-  border-style: solid;
-  border-color: #e5e7ebff;
-
-  border-right-width: 1px;
 
   padding: 8px;
 
@@ -93,12 +103,24 @@ const dayTitle = computed(() => props.days.find(day => day.id === props.date.get
 }
 
 .day__content {
-  display: flex;
+  height: 100%;
+  min-height: 32px;
+
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+
   flex: 1 1 100%;
 
+  display: flex;
   flex-direction: column;
-  row-gap: 2px;
+
+  row-gap: 4px;
 
   padding: 8px;
+
+  border-style: solid;
+  border-color: #e5e7ebff;
+
+  border-left-width: 1px;
 }
 </style>
