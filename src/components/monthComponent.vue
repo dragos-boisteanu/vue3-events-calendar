@@ -160,7 +160,7 @@ const monthDays = computed(() => {
   flex: 1 1 0;
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  grid-template-rows: repeat(5, minmax(0, 1fr));
+  grid-auto-columns: minmax(0, 1fr);
   overflow-y: auto;
 }
 .day {
