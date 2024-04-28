@@ -236,7 +236,7 @@ const previous = () => {
             firstWeekDay.value.getDate() - 7)
 
         if(currentDate.value.getMonth() !== previousWeek.getMonth()) {
-          emits('monthChanged', previousWeek.value)
+          emits('monthChanged', previousWeek)
         }
 
         currentDate.value = previousWeek
@@ -250,7 +250,7 @@ const previous = () => {
       )
 
       if(currentDate.value.getMonth() !== previousDay.getMonth()) {
-        emits('monthChanged', previousDay.value)
+        emits('monthChanged', previousDay)
       }
 
       currentDate.value = previousDay
