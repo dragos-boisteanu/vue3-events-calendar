@@ -123,7 +123,20 @@ const modes = {
 }
 
 const props = defineProps({
-  events: { type: Array, required: true, default: () => [] }
+  events: {
+    validator(value) {
+      let result = false
+      if(Array.isArray(value)) {
+        result =  value.every(event => {
+          if(('id' in event) && ('title' in event) && ('date' in event)) {
+            return true
+          }
+        })
+      }
+
+      return result
+    }
+  }
 })
 const emits = defineEmits(['monthChanged'])
 
