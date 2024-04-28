@@ -99,7 +99,7 @@ const weekDays = computed(() => {
 .week__days__titles {
   display: grid;
   grid-template-columns: 96px  repeat(7, minmax(0, 1fr));
-  padding-right: 15px;
+  padding-right: 8px;
 }
 .week__days--empty {
   border: 1px solid #e5e7ebff;

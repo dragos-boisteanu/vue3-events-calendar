@@ -55,7 +55,7 @@ const dayTitle = computed(() => props.days.find(day => day.id === props.date.get
 .day_title__container {
   text-align: center;
   width: 100%;
-  padding-right: 16px;
+  padding-right: 9px;
 }
 
 .day__title {

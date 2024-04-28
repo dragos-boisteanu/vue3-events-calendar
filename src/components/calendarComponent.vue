@@ -139,8 +139,6 @@ const month = computed(() => currentDate.value.getMonth())
 
 
 const firstWeekDay = computed(() => {
-  console.log("firstWeekDay", currentDate.value.getDay())
-  console.log("firstWeekDate", currentDate.value.getDate())
   const day =
       currentDate.value.getDate() -
       currentDate.value.getDay() +
@@ -295,7 +293,6 @@ const next = () => {
 }
 
 const setToday = () => {
-  console.log("setToday-today", today)
   currentDate.value = new Date(today)
 }
 
