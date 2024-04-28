@@ -3,7 +3,6 @@ import { computed, ref } from 'vue'
 import DayComponent from '@/components/dayComponent.vue'
 import WeekComponent from '@/components/weekComponent.vue'
 import MonthComponent from '@/components/monthComponent.vue'
-import {last} from "eslint-plugin-vue/lib/utils/indent-utils.js";
 
 const months = [
   { id: 0, name: 'January' },
