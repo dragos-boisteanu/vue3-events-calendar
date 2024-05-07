@@ -4,7 +4,7 @@ Full page calendar with month, week and day modes, options to go to the previous
 today date and the most important feature view custom events. 
 
 I have created this package because I couldn't find anything easy to style and use as I wish. I hope it will be 
-useful for your yoo.
+useful for you too.
 
 It only has vue as a dependency. Everything is made using JS Date object.
 
