@@ -48,6 +48,10 @@ const dayTitle = computed(() => props.days.find(day => day.id === props.date.get
   width: 100%;
   height: 100%;
 
+  position: relative;
+  overflow: auto;
+  scrollbar-gutter: stable both-edges;
+
   display: flex;
   flex-direction: column;
 }
@@ -55,12 +59,15 @@ const dayTitle = computed(() => props.days.find(day => day.id === props.date.get
 .day_title__container {
   text-align: center;
   width: 100%;
-  padding-right: 9px;
+  position: sticky;
+  top: 0;
+  background: white;
 }
 
 .day__title {
   padding: 8px;
   text-align: center;
+
 
   border: 1px solid #e5e7ebff;
 
@@ -69,8 +76,6 @@ const dayTitle = computed(() => props.days.find(day => day.id === props.date.get
 
 .day__events {
   height: 100%;
-  overflow-y: auto;
-  scrollbar-gutter: stable;
 
   border: 1px solid #e5e7ebff;
   border-top: none;

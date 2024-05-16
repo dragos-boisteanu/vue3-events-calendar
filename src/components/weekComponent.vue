@@ -60,46 +60,60 @@ const weekDays = computed(() => {
 </script>
 
 <template>
-  <div class="week__days__titles">
-    <div class="week__days--empty" />
-    <div
-      class="week__day__title"
-      :class="{ 'current-day': isCurrentDay(day) }"
-      v-for="day in weekDays"
-      :key="day.id"
-    >
-      {{ day.name }}
+  <div class="week-container">
+    <div class="week__days__titles">
+      <div class="week__days--empty" />
+      <div
+          class="week__day__title"
+          :class="{ 'current-day': isCurrentDay(day) }"
+          v-for="day in weekDays"
+          :key="day.id"
+      >
+        {{ day.name }}
+      </div>
+    </div>
+
+    <div class="week__events__container">
+      <div class="day__events">
+        <div class="week__day__time">All day</div>
+        <div v-for="day in weekDays" :key="day.id" class="week__day">
+          <slot :event="event" v-for="event in getAllDayEvents(day.events)" :key="event.id" />
+        </div>
+      </div>
+      <div class="day__events" v-for="(time, index) in hours" :key="index">
+        <div class="week__day__time">
+          {{ time }}
+        </div>
+        <div v-for="day in weekDays" :key="day.id" class="week__day">
+          <slot
+              :event="event"
+              v-for="event in getDayEventsByHour(time, day.events)"
+              :key="event.id"
+          />
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="week__events__container">
-    <div class="day__events">
-      <div class="week__day__time">All day</div>
-      <div v-for="day in weekDays" :key="day.id" class="week__day">
-        <slot :event="event" v-for="event in getAllDayEvents(day.events)" :key="event.id" />
-      </div>
-    </div>
-    <div class="day__events" v-for="(time, index) in hours" :key="index">
-      <div class="week__day__time">
-        {{ time }}
-      </div>
-      <div v-for="day in weekDays" :key="day.id" class="week__day">
-        <slot
-            :event="event"
-            v-for="event in getDayEventsByHour(time, day.events)"
-            :key="event.id"
-        />
-      </div>
-    </div>
-  </div>
 </template>
 
 <style scoped>
 
+.week-container {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  overflow: auto;
+  scrollbar-gutter: stable both-edges;
+}
+
 .week__days__titles {
+  position: sticky;
+  top: 0;
+  background: white;
+
   display: grid;
   grid-template-columns: 96px  repeat(7, minmax(0, 1fr));
-  padding-right: 8px;
 }
 .week__days--empty {
   border: 1px solid #e5e7ebff;
@@ -124,8 +138,6 @@ const weekDays = computed(() => {
 .week__events__container {
   height: 100%;
   width: 100%;
-  overflow-y:auto;
-  scrollbar-gutter: stable;
 
   display: flex;
   flex-direction: column;
@@ -137,7 +149,7 @@ const weekDays = computed(() => {
   width: 100%;
   display: grid;
   grid-template-columns: 96px repeat(7, minmax(0, 1fr));
-  grid-template-rows: max-content;
+  grid-template-rows: 100%;
   
   border-style: solid;
   border-color: #e5e7ebff;
@@ -175,4 +187,5 @@ const weekDays = computed(() => {
 .current-day {
   font-weight: 600;
 }
+
 </style>
