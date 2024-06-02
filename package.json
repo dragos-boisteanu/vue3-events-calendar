@@ -17,6 +17,13 @@
   "version": "1.0.26",
   "private": false,
   "type": "module",
+  "keywords": [
+    "vue3",
+    "calendar",
+    "events",
+    "vue3 events calendar",
+    "curstom events calendar"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "vite build",
