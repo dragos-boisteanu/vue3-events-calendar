@@ -168,6 +168,9 @@ const monthDays = computed(() => {
   border-bottom: none;
   border-left: none;
 
+  display: flex;
+  flex-direction: column;
+
 }
 .day--empty {
   background: #f9fafbff;
@@ -183,6 +186,8 @@ const monthDays = computed(() => {
 .day__content {
   display: flex;
   flex-direction: column;
+  flex: 1 1 100%;
+
   row-gap: 4px;
 
   padding: 4px;
