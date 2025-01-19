@@ -161,6 +161,7 @@ const monthDays = computed(() => {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   grid-auto-columns: minmax(0, 1fr);
+  grid-auto-rows: minmax(0, 1fr);
   overflow-y: auto;
 }
 .day {
@@ -191,6 +192,8 @@ const monthDays = computed(() => {
   row-gap: 4px;
 
   padding: 4px;
+
+  overflow-y: auto;
 }
 .current-day {
   font-weight: bold;
