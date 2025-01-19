@@ -141,16 +141,17 @@ const handleDragLeave = () => {
         <div class="day__header" :class="{ 'current-day': isCurrentDay(day) }">
           {{ day.id }}
         </div>
-        <div class="day__content" >
-          <slot :event="event" v-for="event in day.events" :key="event.id" />
+        <div class="day__content__container">
+          <div class="day__content" >
+            <slot :event="event" v-for="event in day.events" :key="event.id" />
+          </div>
         </div>
       </div>
-
       <div v-for="day in nextMonthDays" :key="day" class="day day--empty" >
         <div class="day__header">{{ day.id }}</div>
-        <div class="day__content">
-          <slot :event="event" v-for="event in day.events" :key="event.id" />
-        </div>
+          <div class="day__content">
+            <slot :event="event" v-for="event in day.events" :key="event.id" />
+          </div>
       </div>
     </div>
   </div>
@@ -204,17 +205,28 @@ const handleDragLeave = () => {
   font-size: 0.875rem /* 14px */;
   line-height: 1.25rem; /* 20px */
 }
+
+.day__content__container {
+  flex: 1 1 100%;
+
+  overflow: auto;
+  visibility: hidden;
+}
+.day__content__container:hover {
+  visibility: visible;
+}
 .day__content {
+  visibility: visible;
   display: flex;
   flex-direction: column;
-  flex: 1 1 100%;
 
   row-gap: 4px;
 
   padding: 4px;
 
-  overflow-y: auto;
+  overflow-y: hidden;
 }
+
 .current-day {
   font-weight: bold;
 }
