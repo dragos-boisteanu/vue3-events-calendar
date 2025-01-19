@@ -209,7 +209,7 @@ const handleDragLeave = () => {
 .day__content__container {
   flex: 1 1 100%;
 
-  overflow: auto;
+  overflow-y: auto;
   visibility: hidden;
 }
 .day__content__container:hover {
