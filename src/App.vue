@@ -1,6 +1,7 @@
 <script setup>
 import Calendar from '@/components/calendarComponent.vue'
-const events = [
+import { ref } from 'vue'
+const events = ref([
   {
     id: 1,
     date: new Date(),
@@ -22,7 +23,7 @@ const events = [
     title: 'Tomorrow all day event',
     allDay: true
   }
-]
+])
 
 const handleEventClick = (event) => {
   console.log('event', event)
@@ -31,12 +32,26 @@ const handleEventClick = (event) => {
 const handleMothChanged = (month) => {
   console.log("monthChanged", month)
 }
+
+
+const draggedEvent = ref(null)
+const handleDragStart = (payload) => {
+  draggedEvent.value = payload
+}
+
+const handleDropEvent = (payload) => {
+  const eventIndex = events.value.findIndex((e) => e.id === draggedEvent.value.id)
+  events.value[eventIndex].date = new Date(events.value[eventIndex].date.getFullYear(), events.value[eventIndex].date.getMonth(), payload)
+  draggedEvent.value = null
+}
 </script>
 
 <template>
   <div>
-    <calendar :events="events" v-slot="{ event }" @month-changed="handleMothChanged">
+    <calendar :events="events" :enabler-drag-drop="true" v-slot="{ event }" @month-changed="handleMothChanged" @eventDropped="handleDropEvent">
       <div
+        @dragstart="handleDragStart(event)"
+        draggable="true"
         class="flex w-full cursor-pointer items-center gap-x-2 bg-sky-500 p-0.5 text-sm text-white hover:shadow"
         @click="handleEventClick(event)"
       >

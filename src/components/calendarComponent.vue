@@ -136,9 +136,11 @@ const props = defineProps({
 
       return result
     }
-  }
+  },
+  enableDragDrop: {type: Boolean, required: false, default: false},
 })
-const emits = defineEmits(['monthChanged'])
+
+const emits = defineEmits(['monthChanged'], ['drop'])
 
 
 const today = new Date()
@@ -326,6 +328,10 @@ const getCurrentDayEvents = (currentDateValue) => {
 const setMode = (m) => {
   mode.value = m
 }
+
+const handleDropEvent = (payload) => {
+  emits('eventDropped', payload)
+}
 </script>
 
 <template>
@@ -360,8 +366,10 @@ const setMode = (m) => {
         :today="today"
         :year="year"
         :month="month"
+        :enable-drag-drop="props.enableDragDrop"
         :days="days"
         :events="events"
+        @drop="handleDropEvent"
       >
         <slot :event="event" />
       </month-component>

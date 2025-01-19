@@ -1,5 +1,5 @@
 <script setup>
-import {computed} from "vue";
+import { computed, ref } from 'vue'
 
 const props = defineProps({
   year: {type: Number, required: true},
@@ -7,10 +7,14 @@ const props = defineProps({
 
   today: { type: Date, required: true },
 
+  enableDragDrop: { type: Boolean, required: false, default: false },
+
   days: {type: Array, required: true},
   events: {type: Array, required: false, default: () => []},
 
 })
+
+const emits = defineEmits(["drop"])
 
 const isCurrentDay = (day) => {
   const todayDate = props.today.getDate()
@@ -83,13 +87,15 @@ const monthDays = computed(() => {
   const lastMonthDate = new Date(props.year, props.month + 1, 0)
   const days = []
 
+  let daysCount = 1
   while (firstMonthDate <= lastMonthDate) {
     const events = props.events.filter(
         (event) => new Date(event.date).setHours(0, 0, 0, 0) === firstMonthDate.getTime()
     )
+    const dayDate = new Date(firstMonthDate.getFullYear(), firstMonthDate.getMonth(), daysCount++)
     days.push({
       id: firstMonthDate.getDate(),
-      date: firstMonthDate,
+      date: dayDate,
       events
     })
 
@@ -100,6 +106,20 @@ const monthDays = computed(() => {
 })
 
 
+
+const handleDropEvent = (dayDate) => {
+  dragOverDayId.value = ""
+  emits('drop', dayDate.getDate())
+}
+
+const dragOverDayId = ref("")
+const handleDragEnter = (dayId) => {
+  dragOverDayId.value = dayId
+}
+
+const handleDragLeave = () => {
+  dragOverDayId.value = ""
+}
 </script>
 
 <template>
@@ -117,25 +137,23 @@ const monthDays = computed(() => {
         </div>
       </div>
 
-      <div v-for="day in monthDays" :key="day.id" class="day">
+      <div v-for="day in monthDays" :key="day.id" class="day" :class="{'day--drag-over': day.id === dragOverDayId}"  @dragleave.prevent="handleDragLeave" @dragover.prevent="handleDragEnter(day.id)" @drop.prevent="handleDropEvent( day.date)">
         <div class="day__header" :class="{ 'current-day': isCurrentDay(day) }">
           {{ day.id }}
         </div>
-        <div class="day__content">
+        <div class="day__content" >
           <slot :event="event" v-for="event in day.events" :key="event.id" />
         </div>
       </div>
 
-      <div v-for="day in nextMonthDays" :key="day" class="day day--empty">
+      <div v-for="day in nextMonthDays" :key="day" class="day day--empty" >
         <div class="day__header">{{ day.id }}</div>
         <div class="day__content">
           <slot :event="event" v-for="event in day.events" :key="event.id" />
         </div>
       </div>
     </div>
-
   </div>
-
 </template>
 
 <style scoped>
@@ -171,7 +189,9 @@ const monthDays = computed(() => {
 
   display: flex;
   flex-direction: column;
-
+}
+.day--drag-over {
+  background: #f6f6f6;
 }
 .day--empty {
   background: #f9fafbff;
