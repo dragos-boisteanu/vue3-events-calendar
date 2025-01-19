@@ -74,5 +74,9 @@ const handleDropEvent = (payload) => {
   border-radius: 4px;
   cursor: pointer;
 }
+
+.event:hover {
+  box-shadow: 2px 2px 13px -5px rgba(0,0,0,0.54);
+}
 </style>
 
