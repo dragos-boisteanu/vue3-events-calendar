@@ -52,7 +52,7 @@ const handleDropEvent = (payload) => {
       <div
         @dragstart="handleDragStart(event)"
         draggable="true"
-        class="flex w-full cursor-pointer items-center gap-x-2 bg-sky-500 p-0.5 text-sm text-white hover:shadow"
+        class="event"
         @click="handleEventClick(event)"
       >
         <div>{{ event.id }}.</div>
@@ -61,3 +61,18 @@ const handleDropEvent = (payload) => {
     </calendar>
   </div>
 </template>
+
+<style>
+.event {
+  display: flex;
+  vertical-align: center;
+  padding: 4px;
+  color: white;
+  background-color: #2075cf;
+  font-size: 12px;
+  font-family: Roboto;
+  border-radius: 4px;
+  cursor: pointer;
+}
+</style>
+

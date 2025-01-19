@@ -139,8 +139,9 @@ const weekDays = computed(() => {
   height: 100%;
   width: 100%;
 
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-rows: minmax(80px, 1fr);
 }
 
 .day__events {
@@ -182,6 +183,8 @@ const weekDays = computed(() => {
   border-color: #e5e7ebff;
 
   border-right-width: 1px;
+
+  overflow-y: auto;
 }
 
 .current-day {
