@@ -106,13 +106,13 @@ const monthDays = computed(() => {
 })
 
 
+const dragOverDayId = ref("")
 
 const handleDropEvent = (dayDate) => {
   dragOverDayId.value = ""
   emits('drop', dayDate.getDate())
 }
 
-const dragOverDayId = ref("")
 const handleDragEnter = (dayId) => {
   dragOverDayId.value = dayId
 }
