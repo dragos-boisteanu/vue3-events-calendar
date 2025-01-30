@@ -40,8 +40,32 @@ const handleDragStart = (payload) => {
 }
 
 const handleDropEvent = (payload) => {
+  // console.log('handleDropEvent', payload)
   const eventIndex = events.value.findIndex((e) => e.id === draggedEvent.value.id)
-  events.value[eventIndex].date = new Date(events.value[eventIndex].date.getFullYear(), events.value[eventIndex].date.getMonth(), payload)
+
+  let newDate
+
+  switch (payload.type) {
+    case "month": newDate = new Date(payload.date.getFullYear(), payload.date.getMonth(),
+      payload.date.getDate(), events.value[eventIndex].date.getHours(),
+      events.value[eventIndex].date.getMinutes()); break;
+    case "week" :{
+      if(payload.time === 'all') {
+        events.value[eventIndex].allDay = true
+        newDate = new Date(payload.date.getFullYear(), payload.date.getMonth(),
+          payload.date.getDate())
+      } else {
+        events.value[eventIndex].allDay = false
+        newDate = new Date(payload.date.getFullYear(),payload.date.getMonth(),
+          payload.date.getDate(), Number.parseInt(payload.time) )
+      }
+      break;
+    }
+  }
+
+  console.log('newDate', newDate)
+  events.value[eventIndex].date = newDate
+
   draggedEvent.value = null
 }
 </script>
@@ -53,6 +77,7 @@ const handleDropEvent = (payload) => {
         @dragstart="handleDragStart(event)"
         draggable="true"
         class="event"
+        :class="{'event--all-day': event.allDay}"
         @click="handleEventClick(event)"
       >
         <div>{{ event.id }}.</div>
@@ -73,6 +98,10 @@ const handleDropEvent = (payload) => {
   font-family: Roboto;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.event--all-day {
+  flex: 1;
 }
 
 .event:hover {

@@ -43,9 +43,13 @@ const prevMonthDays = computed(() => {
     const events = props.events.filter(
         (event) => new Date(event.date).setHours(0, 0, 0, 0) === firstDay.getTime()
     )
+
+    const date = firstDay.getDate()
+
     const day = {
-      id: firstDay.getDate(),
-      date: firstDay,
+      name: date,
+      id: `pm-${date}`,
+      date: structuredClone(firstDay),
       events
     }
     days.push(day)
@@ -68,9 +72,13 @@ const nextMonthDays = computed(() => {
       const events = props.events.filter(
           (event) => new Date(event.date).setHours(0, 0, 0, 0) === firstDay.getTime()
       )
+
+
+      const date = firstDay.getDate()
       const day = {
-        id: firstDay.getDate(),
-        date: firstDay,
+        name: date,
+        id: `nm-${date}`,
+        date: structuredClone(firstDay),
         events
       }
       days.push(day)
@@ -108,9 +116,9 @@ const monthDays = computed(() => {
 
 const dragOverDayId = ref("")
 
-const handleDropEvent = (dayDate) => {
+const handleDropEvent = (date) => {
   dragOverDayId.value = ""
-  emits('drop', dayDate.getDate())
+  emits('drop', {type: "month", date: date} )
 }
 
 const handleDragEnter = (dayId) => {
@@ -130,14 +138,20 @@ const handleDragLeave = () => {
       </div>
     </div>
     <div class="month__days">
-      <div v-for="day in prevMonthDays" :key="day" class="day day--empty">
-        <div class="day__header">{{ day.id }}</div>
+      <div v-for="day in prevMonthDays" :key="day" class="day day--not-in-month"
+           :class="{'day--drag-over': day.id === dragOverDayId}"
+           @dragleave.prevent="handleDragLeave" @dragover.prevent="handleDragEnter(day.id)"
+           @drop.prevent="handleDropEvent( day.date)">
+        <div class="day__header">{{ day.name }}</div>
         <div class="day__content">
           <slot :event="event" v-for="event in day.events" :key="event.id" />
         </div>
       </div>
 
-      <div v-for="day in monthDays" :key="day.id" class="day" :class="{'day--drag-over': day.id === dragOverDayId}"  @dragleave.prevent="handleDragLeave" @dragover.prevent="handleDragEnter(day.id)" @drop.prevent="handleDropEvent( day.date)">
+      <div v-for="day in monthDays" :key="day.id" class="day"
+           :class="{'day--drag-over': day.id === dragOverDayId}"
+           @dragleave.prevent="handleDragLeave" @dragover.prevent="handleDragEnter(day.id)"
+           @drop.prevent="handleDropEvent( day.date)">
         <div class="day__header" :class="{ 'current-day': isCurrentDay(day) }">
           {{ day.id }}
         </div>
@@ -147,8 +161,11 @@ const handleDragLeave = () => {
           </div>
         </div>
       </div>
-      <div v-for="day in nextMonthDays" :key="day" class="day day--empty" >
-        <div class="day__header">{{ day.id }}</div>
+      <div v-for="day in nextMonthDays" :key="day" class="day day--not-in-month"
+           :class="{'day--drag-over': day.id === dragOverDayId}"
+           @dragleave.prevent="handleDragLeave" @dragover.prevent="handleDragEnter(day.id)"
+           @drop.prevent="handleDropEvent( day.date)">
+        <div class="day__header">{{ day.name }}</div>
           <div class="day__content">
             <slot :event="event" v-for="event in day.events" :key="event.id" />
           </div>
@@ -191,11 +208,18 @@ const handleDragLeave = () => {
   display: flex;
   flex-direction: column;
 }
+
 .day--drag-over {
   background: #f6f6f6;
 }
-.day--empty {
+
+.day--not-in-month {
   background: #f9fafbff;
+}
+
+.day--not-in-month.day--drag-over {
+  background: #f6f6f6;
+
 }
 .day__header {
   text-align: center;
@@ -225,6 +249,7 @@ const handleDragLeave = () => {
   padding: 4px;
 
   overflow-y: hidden;
+  scrollbar-width: none;
 }
 
 .current-day {

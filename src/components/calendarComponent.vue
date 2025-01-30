@@ -140,7 +140,7 @@ const props = defineProps({
   enableDragDrop: {type: Boolean, required: false, default: false},
 })
 
-const emits = defineEmits(['monthChanged'], ['drop'])
+const emits = defineEmits(['monthChanged'], ['eventDropped'])
 
 
 const today = new Date()
@@ -383,6 +383,7 @@ const handleDropEvent = (payload) => {
         :last-week-day="lastWeekDay"
         :first-week-day="firstWeekDay"
         :events="events"
+        @drop="handleDropEvent"
         v-slot="{ event }"
        :days="days">
         <slot :event="event" />

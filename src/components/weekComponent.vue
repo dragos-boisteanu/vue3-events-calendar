@@ -1,5 +1,5 @@
 <script setup>
-import {computed} from "vue";
+import { computed, ref } from 'vue'
 
 const props = defineProps({
   hours: { type: Array, required: true },
@@ -11,6 +11,9 @@ const props = defineProps({
   firstWeekDay: {type: Date, required: true},
   lastWeekDay: {type: Date, required: true},
 })
+
+
+const emits = defineEmits(['drop'])
 
 const isCurrentDay = (day) => {
   const todayDate = props.today.getDate()
@@ -57,6 +60,24 @@ const weekDays = computed(() => {
 
   return result
 })
+
+const dragOverDay = ref({id: "", time: ""})
+const handleEventDrop = (payload) => {
+  dragOverDay.value.id = ""
+  dragOverDay.value.time = ""
+
+  emits('drop', {type: "week", date: payload.date, time: payload.time})
+}
+
+const handleDragEnter = (payload) => {
+  dragOverDay.value.id = payload.id
+  dragOverDay.value.time = payload.time
+}
+
+const handleDragLeave = () => {
+  dragOverDay.value.id = ""
+  dragOverDay.value.time = ""
+}
 </script>
 
 <template>
@@ -76,7 +97,7 @@ const weekDays = computed(() => {
     <div class="week__events__container">
       <div class="day__events">
         <div class="week__day__time">All day</div>
-        <div v-for="day in weekDays" :key="day.id" class="week__day">
+        <div v-for="day in weekDays" :key="day.id" class="week__day" :class="{'week__day--drag-over': day.id === dragOverDay.id && 'all' === dragOverDay.time}" @dragleave.prevent="handleDragLeave" @dragover.prevent="handleDragEnter({id: day.id, time: 'all'})"  @drop.prevent="handleEventDrop({date: day.date, time: 'all'})">
           <slot :event="event" v-for="event in getAllDayEvents(day.events)" :key="event.id" />
         </div>
       </div>
@@ -84,7 +105,7 @@ const weekDays = computed(() => {
         <div class="week__day__time">
           {{ time }}
         </div>
-        <div v-for="day in weekDays" :key="day.id" class="week__day">
+        <div v-for="day in weekDays" :id="`${time}-${day.id}`" :key="`${time}-${day.id}`" class="week__day" :class="{'week__day--drag-over': day.id === dragOverDay.id && time === dragOverDay.time}" @dragleave.prevent="handleDragLeave" @dragover.prevent="handleDragEnter({id: day.id, time})"  @drop.prevent="handleEventDrop({date: day.date, time})">
           <slot
               :event="event"
               v-for="event in getDayEventsByHour(time, day.events)"
@@ -184,6 +205,15 @@ const weekDays = computed(() => {
 
   border-right-width: 1px;
 
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+
+.week__day--drag-over {
+  background: #f6f6f6;
+}
+
+.week__day:hover {
   overflow-y: auto;
 }
 
