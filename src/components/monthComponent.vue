@@ -2,19 +2,19 @@
 import { computed, ref } from 'vue'
 
 const props = defineProps({
-  year: {type: Number, required: true},
-  month: {type: Number, required: true},
+  year: { type: Number, required: true },
+  month: { type: Number, required: true },
 
   today: { type: Date, required: true },
 
   enableDragDrop: { type: Boolean, required: false, default: false },
 
-  days: {type: Array, required: true},
-  events: {type: Array, required: false, default: () => []},
+  days: { type: Array, required: true },
+  events: { type: Array, required: false, default: () => [] }
 
 })
 
-const emits = defineEmits(["drop"])
+const emits = defineEmits(['drop'])
 
 const isCurrentDay = (day) => {
   const todayDate = props.today.getDate()
@@ -41,7 +41,7 @@ const prevMonthDays = computed(() => {
 
   while (firstDay <= lastDay) {
     const events = props.events.filter(
-        (event) => new Date(event.date).setHours(0, 0, 0, 0) === firstDay.getTime()
+      (event) => new Date(event.date).setHours(0, 0, 0, 0) === firstDay.getTime()
     )
 
     const date = firstDay.getDate()
@@ -70,7 +70,7 @@ const nextMonthDays = computed(() => {
 
     while (firstDay <= lastDay) {
       const events = props.events.filter(
-          (event) => new Date(event.date).setHours(0, 0, 0, 0) === firstDay.getTime()
+        (event) => new Date(event.date).setHours(0, 0, 0, 0) === firstDay.getTime()
       )
 
 
@@ -98,7 +98,7 @@ const monthDays = computed(() => {
   let daysCount = 1
   while (firstMonthDate <= lastMonthDate) {
     const events = props.events.filter(
-        (event) => new Date(event.date).setHours(0, 0, 0, 0) === firstMonthDate.getTime()
+      (event) => new Date(event.date).setHours(0, 0, 0, 0) === firstMonthDate.getTime()
     )
     const dayDate = new Date(firstMonthDate.getFullYear(), firstMonthDate.getMonth(), daysCount++)
     days.push({
@@ -114,11 +114,11 @@ const monthDays = computed(() => {
 })
 
 
-const dragOverDayId = ref("")
+const dragOverDayId = ref('')
 
 const handleDropEvent = (date) => {
-  dragOverDayId.value = ""
-  emits('drop', {type: "month", date: date} )
+  dragOverDayId.value = ''
+  emits('drop', { type: 'month', date: date })
 }
 
 const handleDragEnter = (dayId) => {
@@ -126,7 +126,7 @@ const handleDragEnter = (dayId) => {
 }
 
 const handleDragLeave = () => {
-  dragOverDayId.value = ""
+  dragOverDayId.value = ''
 }
 </script>
 
@@ -156,7 +156,7 @@ const handleDragLeave = () => {
           {{ day.id }}
         </div>
         <div class="day__content__container">
-          <div class="day__content" >
+          <div class="day__content">
             <slot :event="event" v-for="event in day.events" :key="event.id" />
           </div>
         </div>
@@ -166,9 +166,9 @@ const handleDragLeave = () => {
            @dragleave.prevent="handleDragLeave" @dragover.prevent="handleDragEnter(day.id)"
            @drop.prevent="handleDropEvent( day.date)">
         <div class="day__header">{{ day.name }}</div>
-          <div class="day__content">
-            <slot :event="event" v-for="event in day.events" :key="event.id" />
-          </div>
+        <div class="day__content">
+          <slot :event="event" v-for="event in day.events" :key="event.id" />
+        </div>
       </div>
     </div>
   </div>
@@ -180,10 +180,12 @@ const handleDragLeave = () => {
   display: flex;
   flex-direction: column;
 }
+
 .months__days__titles {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
 }
+
 .month__day__title {
   padding: 8px;
   text-align: center;
@@ -192,6 +194,7 @@ const handleDragLeave = () => {
   border-bottom: none;
   border-left: none;
 }
+
 .month__days {
   flex: 1 1 0;
   display: grid;
@@ -200,6 +203,7 @@ const handleDragLeave = () => {
   grid-auto-rows: minmax(0, 1fr);
   overflow-y: auto;
 }
+
 .day {
   border: 1px solid #e5e7ebff;
   border-bottom: none;
@@ -221,6 +225,7 @@ const handleDragLeave = () => {
   background: #f6f6f6;
 
 }
+
 .day__header {
   text-align: center;
 
@@ -236,9 +241,11 @@ const handleDragLeave = () => {
   overflow: auto;
   visibility: hidden;
 }
+
 .day__content__container:hover {
   visibility: visible;
 }
+
 .day__content {
   visibility: visible;
   display: flex;

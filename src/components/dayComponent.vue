@@ -1,11 +1,11 @@
 <script setup>
-import {computed} from "vue";
+import { computed } from 'vue'
 
 const props = defineProps({
   date: { type: Date, required: true },
   hours: { type: Array, required: true },
   events: { type: Array, required: false, default: () => [] },
-  days: {type: Array, required: true}
+  days: { type: Array, required: true }
 })
 
 const getCurrentDayEventsByHour = (time) => {
@@ -20,27 +20,27 @@ const dayTitle = computed(() => props.days.find(day => day.id === props.date.get
 </script>
 
 <template>
-    <div class="day">
-      <div class="day_title__container">
-        <div  class="day__title">
-          {{ dayTitle }}
+  <div class="day">
+    <div class="day_title__container">
+      <div class="day__title">
+        {{ dayTitle }}
+      </div>
+    </div>
+    <div class="day__events">
+      <div class="day__time">
+        <div class="day__time__title">All day</div>
+        <div class="day__content">
+          <slot :event="event" v-for="event in getAllDayEvents()" :key="event.id" />
         </div>
       </div>
-      <div class="day__events">
-        <div class="day__time">
-          <div class="day__time__title">All day</div>
-          <div class="day__content">
-            <slot :event="event" v-for="event in getAllDayEvents()" :key="event.id" />
-          </div>
-        </div>
-        <div class="day__time" v-for="(time, index) in props.hours" :key="index">
-          <div class="day__time__title">{{ time }}</div>
-          <div class="day__content">
-            <slot :event="event" v-for="event in getCurrentDayEventsByHour(time)" :key="event.id" />
-          </div>
+      <div class="day__time" v-for="(time, index) in props.hours" :key="index">
+        <div class="day__time__title">{{ time }}</div>
+        <div class="day__content">
+          <slot :event="event" v-for="event in getCurrentDayEventsByHour(time)" :key="event.id" />
         </div>
       </div>
     </div>
+  </div>
 </template>
 
 <style scoped>
@@ -88,7 +88,6 @@ const dayTitle = computed(() => props.days.find(day => day.id === props.date.get
   display: grid;
   grid-template-columns: 96px 1fr;
   grid-template-rows: max-content;
-
 
 
   border: 1px solid #e5e7ebff;

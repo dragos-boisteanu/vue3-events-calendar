@@ -1,6 +1,7 @@
 <script setup>
 import Calendar from '@/components/calendarComponent.vue'
 import { ref } from 'vue'
+
 const events = ref([
   {
     id: 1,
@@ -30,7 +31,7 @@ const handleEventClick = (event) => {
 }
 
 const handleMothChanged = (month) => {
-  console.log("monthChanged", month)
+  console.log('monthChanged', month)
 }
 
 
@@ -46,20 +47,24 @@ const handleDropEvent = (payload) => {
   let newDate
 
   switch (payload.type) {
-    case "month": newDate = new Date(payload.date.getFullYear(), payload.date.getMonth(),
-      payload.date.getDate(), events.value[eventIndex].date.getHours(),
-      events.value[eventIndex].date.getMinutes()); break;
-    case "week" :{
-      if(payload.time === 'all') {
+    case 'month':
+      newDate = new Date(payload.date.getFullYear(), payload.date.getMonth(),
+        payload.date.getDate(), events.value[eventIndex].date.getHours(),
+        events.value[eventIndex].date.getMinutes())
+      break
+    case 'week' : {
+      if (payload.time === 'all') {
         events.value[eventIndex].allDay = true
         newDate = new Date(payload.date.getFullYear(), payload.date.getMonth(),
-          payload.date.getDate())
+          payload.date.getDate(), events.value[eventIndex].date.getHours(),
+          events.value[eventIndex].date.getMinutes())
       } else {
         events.value[eventIndex].allDay = false
-        newDate = new Date(payload.date.getFullYear(),payload.date.getMonth(),
-          payload.date.getDate(), Number.parseInt(payload.time) )
+        newDate = new Date(payload.date.getFullYear(), payload.date.getMonth(),
+          payload.date.getDate(), Number.parseInt(payload.time),
+          events.value[eventIndex].date.getMinutes())
       }
-      break;
+      break
     }
   }
 
@@ -72,7 +77,8 @@ const handleDropEvent = (payload) => {
 
 <template>
   <div>
-    <calendar :events="events" :enabler-drag-drop="true" v-slot="{ event }" @month-changed="handleMothChanged" @eventDropped="handleDropEvent">
+    <calendar :events="events" :enabler-drag-drop="true" v-slot="{ event }" @month-changed="handleMothChanged"
+              @eventDropped="handleDropEvent">
       <div
         @dragstart="handleDragStart(event)"
         draggable="true"
@@ -105,7 +111,7 @@ const handleDropEvent = (payload) => {
 }
 
 .event:hover {
-  box-shadow: 2px 2px 13px -5px rgba(0,0,0,0.54);
+  box-shadow: 2px 2px 13px -5px rgba(0, 0, 0, 0.54);
 }
 </style>
 
