@@ -205,15 +205,16 @@ const handleDragLeave = () => {
   flex-direction: column;
   row-gap: 4px;
 
-  padding: 8px;
+  padding: 8px 0 8px 10px;
 
   border-style: solid;
   border-color: #e5e7ebff;
 
   border-right-width: 1px;
 
-  overflow-y: hidden;
-  scrollbar-width: none;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-gutter: stable;
 }
 
 .week__day--drag-over {
