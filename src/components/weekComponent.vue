@@ -7,7 +7,6 @@ const props = defineProps({
   events: { type: Array, required: true },
 
   today: { type: Date, required: true },
-  currentDate: { type: Date, required: true },
   firstWeekDay: { type: Date, required: true },
   lastWeekDay: { type: Date, required: true }
 })
@@ -31,10 +30,7 @@ const getAllDayEvents = (events) => {
   return events.filter((event) => event.allDay)
 }
 
-
 const weekDays = computed(() => {
-  // if (props.mode.value !== modes.Week) return
-
   let result = []
 
   const firstDate = new Date(props.firstWeekDay)

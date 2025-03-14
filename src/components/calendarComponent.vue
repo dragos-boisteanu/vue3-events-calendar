@@ -378,13 +378,13 @@ const handleDropEvent = (payload) => {
         v-if="mode === modes.Week"
         :today="today"
         :hours="hours24"
-        :current-date="currentDate"
         :last-week-day="lastWeekDay"
         :first-week-day="firstWeekDay"
         :events="events"
+        :days="days"
         @drop="handleDropEvent"
         v-slot="{ event }"
-        :days="days">
+      >
         <slot :event="event" />
       </week-component>
 
