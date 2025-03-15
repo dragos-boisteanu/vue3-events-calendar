@@ -140,7 +140,7 @@ const props = defineProps({
   enableDragDrop: { type: Boolean, required: false, default: false }
 })
 
-const emits = defineEmits(['monthChanged'], ['eventDropped'])
+const emits = defineEmits(['monthChanged', 'eventDropped'])
 
 
 const today = new Date()
@@ -395,6 +395,7 @@ const handleDropEvent = (payload) => {
         :days="days"
         :date="currentDate"
         :events="currentDateEvents"
+        @drop="handleDropEvent"
         v-slot="{ event }"
       >
         <slot :event="event" />

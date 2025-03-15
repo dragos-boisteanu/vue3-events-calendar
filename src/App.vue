@@ -66,9 +66,19 @@ const handleDropEvent = (payload) => {
       }
       break
     }
+    case 'hour':
+      if(payload.time === 'all') {
+        events.value[eventIndex].allDay = true
+        newDate = new Date(payload.date.getFullYear(), payload.date.getMonth(), payload.date.getDate(), 0, 0)
+      } else {
+        events.value[eventIndex].allDay = false
+        newDate = new Date(payload.date.getFullYear(), payload.date.getMonth(),
+          payload.date.getDate(), Number.parseInt(payload.time),
+          events.value[eventIndex].date.getMinutes())
+      }
+      break;
   }
 
-  console.log('newDate', newDate)
   events.value[eventIndex].date = newDate
 
   draggedEvent.value = null
