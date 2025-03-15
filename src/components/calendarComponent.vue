@@ -119,16 +119,16 @@ const hours24 = [
 const modes = {
   Month: 'month',
   Week: 'week',
-  Day: 'day',
+  Day: 'day'
 }
 
 const props = defineProps({
   events: {
     validator(value) {
       let result = false
-      if(Array.isArray(value)) {
-        result =  value.every(event => {
-          if(('id' in event) && ('title' in event) && ('date' in event)) {
+      if (Array.isArray(value)) {
+        result = value.every(event => {
+          if (('id' in event) && ('title' in event) && ('date' in event)) {
             return true
           }
         })
@@ -136,9 +136,11 @@ const props = defineProps({
 
       return result
     }
-  }
+  },
+  enableDragDrop: { type: Boolean, required: false, default: false }
 })
-const emits = defineEmits(['monthChanged'])
+
+const emits = defineEmits(['monthChanged', 'eventDropped'])
 
 
 const today = new Date()
@@ -152,9 +154,9 @@ const month = computed(() => currentDate.value.getMonth())
 
 const firstWeekDay = computed(() => {
   const day =
-      currentDate.value.getDate() -
-      currentDate.value.getDay() +
-      (currentDate.value.getDay() === 0 ? -6 : 1)
+    currentDate.value.getDate() -
+    currentDate.value.getDay() +
+    (currentDate.value.getDay() === 0 ? -6 : 1)
   return new Date(currentDate.value.getFullYear(), currentDate.value.getMonth(), day)
 })
 const lastWeekDay = computed(() => {
@@ -228,35 +230,34 @@ const previous = () => {
       )
       emits('monthChanged', currentDate.value)
       break
-    case modes.Week:
-      {
-        const previousWeek = new Date(
-            firstWeekDay.value.getFullYear(),
-            firstWeekDay.value.getMonth(),
-            firstWeekDay.value.getDate() - 7)
+    case modes.Week: {
+      const previousWeek = new Date(
+        firstWeekDay.value.getFullYear(),
+        firstWeekDay.value.getMonth(),
+        firstWeekDay.value.getDate() - 7)
 
-        if(currentDate.value.getMonth() !== previousWeek.getMonth()) {
-          emits('monthChanged', previousWeek)
-        }
-
-        currentDate.value = previousWeek
+      if (currentDate.value.getMonth() !== previousWeek.getMonth()) {
+        emits('monthChanged', previousWeek)
       }
+
+      currentDate.value = previousWeek
+    }
       break
     case modes.Day: {
       const previousDay = new Date(
-          currentDate.value.getFullYear(),
-          currentDate.value.getMonth(),
-          currentDate.value.getDate() - 1
+        currentDate.value.getFullYear(),
+        currentDate.value.getMonth(),
+        currentDate.value.getDate() - 1
       )
 
-      if(currentDate.value.getMonth() !== previousDay.getMonth()) {
+      if (currentDate.value.getMonth() !== previousDay.getMonth()) {
         emits('monthChanged', previousDay)
       }
 
       currentDate.value = previousDay
 
       break
-      }
+    }
   }
 }
 const next = () => {
@@ -273,9 +274,9 @@ const next = () => {
     // week
     case modes.Week: {
       const nextWeek = new Date(
-          lastWeekDay.value.getFullYear(),
-          lastWeekDay.value.getMonth(),
-          lastWeekDay.value.getDate() + 1
+        lastWeekDay.value.getFullYear(),
+        lastWeekDay.value.getMonth(),
+        lastWeekDay.value.getDate() + 1
       )
 
       if (currentDate.value.getMonth() !== nextWeek.getMonth()) {
@@ -288,9 +289,9 @@ const next = () => {
     // day
     case modes.Day: {
       const nextDay = new Date(
-          currentDate.value.getFullYear(),
-          currentDate.value.getMonth(),
-          currentDate.value.getDate() + 1
+        currentDate.value.getFullYear(),
+        currentDate.value.getMonth(),
+        currentDate.value.getDate() + 1
       )
 
       if (currentDate.value.getMonth() !== nextDay.getMonth()) {
@@ -326,6 +327,10 @@ const getCurrentDayEvents = (currentDateValue) => {
 const setMode = (m) => {
   mode.value = m
 }
+
+const handleDropEvent = (payload) => {
+  emits('eventDropped', payload)
+}
 </script>
 
 <template>
@@ -351,7 +356,7 @@ const setMode = (m) => {
       </div>
     </div>
     <div
-        class="calendar__content"
+      class="calendar__content"
     >
       <!--      month structure  -->
       <month-component
@@ -360,8 +365,10 @@ const setMode = (m) => {
         :today="today"
         :year="year"
         :month="month"
+        :enable-drag-drop="props.enableDragDrop"
         :days="days"
         :events="events"
+        @drop="handleDropEvent"
       >
         <slot :event="event" />
       </month-component>
@@ -371,12 +378,13 @@ const setMode = (m) => {
         v-if="mode === modes.Week"
         :today="today"
         :hours="hours24"
-        :current-date="currentDate"
         :last-week-day="lastWeekDay"
         :first-week-day="firstWeekDay"
         :events="events"
+        :days="days"
+        @drop="handleDropEvent"
         v-slot="{ event }"
-       :days="days">
+      >
         <slot :event="event" />
       </week-component>
 
@@ -387,6 +395,7 @@ const setMode = (m) => {
         :days="days"
         :date="currentDate"
         :events="currentDateEvents"
+        @drop="handleDropEvent"
         v-slot="{ event }"
       >
         <slot :event="event" />

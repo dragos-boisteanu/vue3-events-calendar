@@ -1,12 +1,14 @@
 <script setup>
-import {computed} from "vue";
+import { computed, ref } from 'vue'
 
 const props = defineProps({
   date: { type: Date, required: true },
   hours: { type: Array, required: true },
   events: { type: Array, required: false, default: () => [] },
-  days: {type: Array, required: true}
+  days: { type: Array, required: true }
 })
+
+const emits = defineEmits(['drop'])
 
 const getCurrentDayEventsByHour = (time) => {
   return props.events.filter((event) => !event.allDay && event.date.getHours() === Number.parseInt(time))
@@ -17,30 +19,54 @@ const getAllDayEvents = () => {
 }
 
 const dayTitle = computed(() => props.days.find(day => day.id === props.date.getDay()).name)
+
+
+const dragOverHour = ref("")
+const handleEventDrop = (time) => {
+  dragOverHour.value = ''
+
+  emits('drop', {type: 'hour', date: props.date, time})
+}
+
+const handleDragEnter = (payload) => {
+  dragOverHour.value = payload
+}
+
+const handleDragLeave = () => {
+  dragOverHour.value = ''
+}
 </script>
 
 <template>
-    <div class="day">
-      <div class="day_title__container">
-        <div  class="day__title">
-          {{ dayTitle }}
+  <div class="day">
+    <div class="day_title__container">
+      <div class="day__title">
+        {{ dayTitle }}
+      </div>
+    </div>
+    <div class="day__events">
+      <div class="day__time">
+        <div class="day__time__title">All day</div>
+        <div class="day__content"
+             :class="{'hour--drag-over': 'all' === dragOverHour}"
+             @dragleave.prevent="handleDragLeave" @dragover.prevent="handleDragEnter('all')"
+             @drop.prevent="handleEventDrop('all')"
+        >
+          <slot :event="event" v-for="event in getAllDayEvents()" :key="event.id" />
         </div>
       </div>
-      <div class="day__events">
-        <div class="day__time">
-          <div class="day__time__title">All day</div>
-          <div class="day__content">
-            <slot :event="event" v-for="event in getAllDayEvents()" :key="event.id" />
-          </div>
-        </div>
-        <div class="day__time" v-for="(time, index) in props.hours" :key="index">
-          <div class="day__time__title">{{ time }}</div>
-          <div class="day__content">
-            <slot :event="event" v-for="event in getCurrentDayEventsByHour(time)" :key="event.id" />
-          </div>
+      <div class="day__time" v-for="(time, index) in props.hours" :key="index">
+        <div class="day__time__title">{{ time }}</div>
+        <div class="day__content"
+             :class="{'hour--drag-over': time === dragOverHour}"
+             @dragleave.prevent="handleDragLeave" @dragover.prevent="handleDragEnter( time)"
+             @drop.prevent="handleEventDrop( time)"
+        >
+          <slot :event="event" v-for="event in getCurrentDayEventsByHour(time)" :key="event.id" />
         </div>
       </div>
     </div>
+  </div>
 </template>
 
 <style scoped>
@@ -90,7 +116,6 @@ const dayTitle = computed(() => props.days.find(day => day.id === props.date.get
   grid-template-rows: max-content;
 
 
-
   border: 1px solid #e5e7ebff;
   border-top: none;
 
@@ -109,7 +134,7 @@ const dayTitle = computed(() => props.days.find(day => day.id === props.date.get
 
 .day__content {
   height: 100%;
-  min-height: 32px;
+  min-height: 36px;
 
   overflow-y: auto;
   scrollbar-gutter: stable;
@@ -127,5 +152,9 @@ const dayTitle = computed(() => props.days.find(day => day.id === props.date.get
   border-color: #e5e7ebff;
 
   border-left-width: 1px;
+}
+
+.hour--drag-over {
+  background: #f6f6f6;
 }
 </style>
